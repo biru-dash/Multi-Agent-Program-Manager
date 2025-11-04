@@ -1,0 +1,538 @@
+Aftermarket Revenue Visibility Discovery read-out-20250916_093201-Meeting Recording
+September 16, 2025, 2:35PM
+40m 2s
+
+Dash, Biru (Contractor) started transcription
+
+Gadi, Rohan   0:04
+Mute. I'll just come off it when I need to.
+
+Dash, Biru (Contractor)   0:06
+OK. Sounds good. Thank you. OK, let me kick it up and I'll hand it over to Kaushik. So just to, you know, summarize, we started a month or two ago.
+Go with the aftermarket revenue visibility project with the goal that for North America for all the set of KPIs that we need to to make this this dashboard successful.
+And have the right insights, right. We we did a discovery where we interacted, we captured the requirements when it comes to what are those KPAS that the business wants to see that will help them drive actions.
+And then successfully we we had interactive sessions with the stakeholder. We identified the stakeholders, we had interactive sessions with them and then we we documented the definitions of those KPIs and how those KPIs.
+Map back into different source systems and you know the the tables and columns in those source systems and from a visual standpoint, we also created some mockups that all of which will be useful when we go into the implementation phase.
+For North America, that's like a high level summary of during this time we found like around 60 KPIs in total, 20 each for CCS, ALC and RC.
+Um, the list of business and technical SMEs we'll we'll see that a little bit, uh, later in this deck. Um.
+Yeah.
+So just to share the total list of stakeholders, the the team that did this discovery included Kaushik as the business analyst and then we had a data modeler, architect and we had Pavia developers.
+Srikant helped lead from the DHI standpoint and then from business, Rohan was our champion, he was our product owner and then we worked directly with Jennifer from CCS, William and Chance from agency and then.
+Mohammed Rafael from RC. From BRM standpoint, Forest and his team helped us get in touch with the right points of contact from technical and from source standpoint.
+And then we also work directly with some of the technical SMEs like Bethany, Michael and Chance to get access to the respective source systems like mentioned here.
+There's a full list of stakeholders that we will also share as part of the deliverables.
+So moving on to the problem statement, I think let me kick off with the problem statement that we started with and then Kaushik, you can dive deep into the KPIs and the definitions. So the the problem statement that we started this project was.
+You know today the visibility to you know what we initially planned in the beginning of the year for different business units with an aftermarket business and where are we like how are you tracking towards that plan is very limited it's.
+It's done by Rohan, but it's done mostly on, you know, very manual basis. So the the intent behind this project was how do we capture all the right data and how do we capture the mappings to that data so that we can do this more in a more automated fashion going forward.
+And in the meantime, can we also create a MVP dashboard that uses a semi automated way of populating this KPI so that we can validate that the KPI definitions and the KPI calculations and transmissions needed are all accurate. So that was really the intent.
+We start with which we started this project.
+Any questions so far, you know thus far?
+Anything else, Ronnie, you wanted to add?
+
+Gadi, Rohan   4:35
+That's right. No, I think, I mean if this is the this deck is only for us or is it to be does it need to go further? Let's look at OK.
+
+Dash, Biru (Contractor)   4:46
+So it's mostly for you as a readout to you know what the team has achieved and then going forward when we are in the stage of implementing, right, this could be something that the that team can reference in terms of you know what was done as part of discovery and where we are.
+
+Gadi, Rohan   4:50
+You know, but they may say, OK, yeah, I think want two hours. There's a super snagger.
+And we can. Yeah, yeah, yeah, yeah. I'm seeing. Yeah. OK. OK. No. Yeah. So far so good or what I'm seeing.
+
+Dash, Biru (Contractor)   5:03
+What can be picked up so?
+OK. The key activities that we accomplished included, you know, defining what this those KPIs are, defining The Who, like who are those stakeholders, the personas and I think one of the important.
+Thing that we also mapped out as part of this is the validation step. So as you know a lot of this data is very high visibility. We are looking at revenue numbers for the business unit which help drive our strategy going forward. So it's it's.
+It's it has visibility up to DM's level, so it's very important that we have the right data violation steps in place. And as part of this discovery, we also identified for each data source who is the, you know, template owner who is the.
+Who's that? Who's the owner in terms of, you know, saying that this data is accurate and they can sign up on the quality. And also once it's accumulated into KPIs, those numbers look good. So we did that as part of this discovery we documented.
+The the logic, the definitions, the logic and the mappings into our business requirement documents, BRDS and Akashik will walk you through some of them in in the later in this deck we also.
+Came up with a high level design. So once we are ready to implement this, what would that high level architecture look like? You know, how would we work with the sources that we have? How would we work with some of the manual data that we need to pull in? All of that is.
+Capturing this high level design document data architecture, how this work with the snowflake architecture we have in place that's also documented and from a visual standpoint what the wireframes would look like is also documented.
+You know, given the challenges we had recently on the funding side and engagement side, I think some of the pending activities include getting a like a formal sign up on all the BRDS.
+And I think we discussed about having a more dedicated wireframing session with all all the stakeholders, not only from North America, but also from other regions. So we couldn't do that either. And then we also.
+I think face challenges when it comes to getting engagement from some of the business units like RC. So we couldn't validate that the data, the the the files that we have in place and the data that we're looking at is accurate or not.
+And from architectural.
+
+Gadi, Rohan   7:56
+So, so on on the workshop for wireframes, we can say we started that right? Like especially for Europe, we initiated the work.
+
+Dash, Biru (Contractor)   7:59
+Yeah.
+Yeah, yeah. But I think what I'm referring to here, Ron, is I think we discussed about having the, you know, dedicated wireframing session where we, you know, we don't look at what we have today, but we look at where we want to go and from there we sort of.
+
+Gadi, Rohan   8:05
+OK.
+Yeah, yeah, yeah.
+Yeah. OK. OK. It's already back then. OK. OK. So we have a little bit less than 20. Yeah. So questions are they're holding. I think we've addressed that that so far it sounds like that fog levels or even it's few levels to like fog.
+
+Dash, Biru (Contractor)   8:20
+The redesign. So we couldn't do that, but that's something could be taken up in the future.
+Yeah. So with that, I'll let Kaushik, uh.
+Uh, walk you through the documentation and the deliverables that we have in place. And Kaushik, please also maybe show the the folders where all of this is maintained.
+
+Gadi, Rohan   8:38
+Something you would get on the can I get it? Yeah, it was a couple seconds. I said we we just now does that and that's good.
+
+Nidudhavelu, Kaushik (Contractor)   8:49
+Sure. Thanks. Hello everyone. I'll take a few minutes to kind of summarize what are all the KPIs that we have identified and the respective data sources that we need for this aftermarket business.
+
+Dash, Biru (Contractor)   8:50
+Yeah.
+
+Nidudhavelu, Kaushik (Contractor)   9:05
+So during our during our discovery phase, our primary focus was on North America region. I know Rohan you have kind of had this Excel based tool gate where you identified all the constituents of the key metric which is gap to plans. So we use that to kind of backtack data the actual.
+Source data that is needed for all the KPI related calculations. So as you see on my screen on the very top section we just listed down some of the example KPIs but these are just indicative. I kind of listed down the key KPI which is the gap to plan which is the essential one that we are tracking as part of the dashboard and.
+The others are basically the constituents of the Gap to plan, but yeah, the further constituents considering the real estate on the screen, we'd have to kind of document it in a different text, but you get the picture. It's like Gap to plan is the key metric and apart from including Gap to plan for each of the business.
+We have business units, we have somewhere about 20 KPIs. So for CCSMA excluding rentals and also for KLC North America, we completed all defining all the KPIs and respective calculation logic that includes you know how the data must be extracted from the respective data source systems and.
+Then sample calculations that were done on top of that and we had conversations with business users as well taking or getting their agreement on it. One of the KPIs that which we were not able to track or kind of discover during our sessions was net package growth with for the RC.
+I think Rohan, during our conversations as well, we agreed that you know this will be picked during the later phases during the implementation phase.
+So that was one of the, that's one of the open item we have in terms of KPI definition and the calculation logic.
+
+Gadi, Rohan   10:54
+Actually come with me.
+OK, so it's long. Uh, that's feature open. Yeah, I wouldn't call it an open item. The business also doesn't have it.
+
+Nidudhavelu, Kaushik (Contractor)   11:04
+Uh, perfect.
+
+Gadi, Rohan   11:07
+Uh, sorry, this this one thing. Um.
+
+Nidudhavelu, Kaushik (Contractor)   11:09
+Thanks, Ron.
+
+Gadi, Rohan   11:13
+So when we say 20 KPIs, so we'll like we're listing here 5, but it's literally 5 * 5 kind of a thing, right? So backlog is broken on exactly what you're saying. So it's totals in the middle.
+
+Nidudhavelu, Kaushik (Contractor)   11:23
+So we have five, we have 20 for each BU. So let me bring up the other slide. So here we have the conflict list of them.
+
+Gadi, Rohan   11:30
+OK, so you're explaining all of that. OK, OK, it's fine. Yeah, OK.
+
+Nidudhavelu, Kaushik (Contractor)   11:34
+Yeah.
+
+Gadi, Rohan   11:36
+The only thing I so if if you just go back to that page.
+
+Nidudhavelu, Kaushik (Contractor)   11:36
+And yeah, as part of.
+Yeah.
+
+Gadi, Rohan   11:42
+The only thing that's we're not calling out explicitly here or at least so far in this deck, maybe it's still going forward is it's not just the, it's not just the gap to plan and the plan and backlog revenue, but it's also by line of business.
+So between SASR mods, all of that, right? So, so that that insight is missing. I mean again, like I said, if it's just for us, it's fine. I mean, I know it, you know it. So that's OK. But if the intent is to show this document to somebody else later, uh, then.
+
+   12:06
+Yes.
+
+Gadi, Rohan   12:16
+Uh, at least you need to show like it's all of this at a line of business level.
+
+Nidudhavelu, Kaushik (Contractor)   12:22
+Yep, got you, Rohan. So I mean considering the deck was put on the last minute. So what we did was that kind of break up at the BU level, I mean the line of business or the product line level, we captured that as part of the BRD documents.
+
+Gadi, Rohan   12:23
+Sure. So it's like, so how would we use that?
+For like the location of please, we wanna provide for the recount. OK, OK, how about and the backlog is still empty again, it would make me fairly.
+
+Nidudhavelu, Kaushik (Contractor)   12:37
+So we have a BRD for gap to plan for each of the business unit where we are you know kind of stated that this gap to plan is captured at various levels that includes region, business unit and then the product line of the line of business level.
+
+Gadi, Rohan   12:46
+Thanks.
+I I don't really have much data. I would not. I would not get out of the comments, so it would be quite.
+
+Nidudhavelu, Kaushik (Contractor)   12:53
+There are individual KPI BRD's as well where we identified the constraints in calculating certain metrics for some of the business units. An example is this time and material for ALC. OK, so all those caveats you know we identified and documented as part of the BRD's.
+
+Gadi, Rohan   13:11
+Why would this be attractive? And then at the bottom maybe say complexity, high, medium, low. What are these like dates in the boxes? They what is? What are these numbers?
+
+Nidudhavelu, Kaushik (Contractor)   13:14
+8.
+Hold on, I'm sorry if it was not indicated. These were basically the count of KPIs distributed across high, medium and low. So there is one KPI which is highly complex for CCS.
+
+Gadi, Rohan   13:30
+I see we only had three which are complex, high complex. I thought all of RC was highly complex.
+
+Nidudhavelu, Kaushik (Contractor)   13:33
+And there are 11 that are medium complex and there are eight that are low complexity.
+highly comp. OK, I understood that. But the major consideration that we took was, you know, the number of data sources that we have to hit, the number of skits that we need to take.
+
+Gadi, Rohan   13:56
+OK. Yeah, I mean.
+Yeah.
+
+Nidudhavelu, Kaushik (Contractor)   14:00
+But uh, when you compare that at the scale of Uh ALC and CCS, right, we kind of had them distributed over high high end.
+
+Gadi, Rohan   14:04
+Hello.
+OK, that's fine.
+
+Nidudhavelu, Kaushik (Contractor)   14:13
+Yeah. So again, we have listed on all the list of KPIs that you know that needs to be calculated as part of the spec and for future reference we have linked all our deliverables here as well. You know the KPI tracker where we calculated this high, medium, low.
+Uh, the data sources that are needed, the business points of contact, technical SMEs. So all those were tracked as part of KPI trackers link here and then we have uh links for the BRD as well as the wireframe as well.
+
+Gadi, Rohan   14:41
+Yes, where is the the coverage for the future quarters like on the previous page? Well, yeah, do you need owners as wrote out or we must need the one in the.
+
+Nidudhavelu, Kaushik (Contractor)   14:52
+So it was part of the table. Uh yeah, we just left this as uh OK, I can add that as part of the list.
+
+Gadi, Rohan   14:57
+We care about those, yeah, because like it's like next 3/4 coverage also, right, which may not be in the current year. So really trying to avoid that analysis paralysis comparing the forest of numbers.
+
+Nidudhavelu, Kaushik (Contractor)   15:06
+Oh, sure. Uh, we can add that.
+These were the snapshots that were added as part of. Basically these are the snapshots from the MVP that Ashwini has developed. Again, this is for North America region, so those details were captured here.
+And whatever the estimates that we came up with for the implementation plan, that's the assumption that you know we'll proceed with these wireframes. But yeah, maybe when the when the project resumes, right, maybe we can have another round of discussion, maybe we'll complete on our conversations related to the.
+Trains and then we can have a look at, have a look at the plans necessary.
+Yes.
+So that's on the MVP design part and we have talked about the KPIs, but I like to quickly bring the entire group on page regarding this high level technical architectures. So there were I.
+I mean based on our conversations with the architecture team, especially Jennifer Nissan. So we there are two different platforms on which any development can be taken at present. One is this AW platform called Nexus, Nexus or you know we usually call it the Nexus architecture and the other.
+This snowflake piece. So based on our conversations with Jennifer, we came to an agreement that for this particular project we'd have to go via the snowflake approach. So again, this is the standard architecture that we follow. So we have identified these are the data sources that we have.
+Most of our data is coming from Salesforce, HFM and the other minor but important data sources include Ms. Dynamic and SAP ECC, where for SAP ECC you know we are pulling the data for everything related to RC.
+There is a separate team that is working on building data products on top of that. But you know we have that you know a synergy there that we can kind of rely on each other and kind of work on building data products there. Anything that is not tracked as part of strategic source systems you know.
+We'll take them as SharePoint files. Um, the important one being, you know, the conversion ratio, backlog revenue for CCS and plan by part for.
+I see business here. So for all the strategic source systems we are going to use click to replicate the data into Snowflake, the role layer which we call ICOE and again we are going to use AWS Lambda or any other tool based on the type of implementation to ingest the same data into.
+The landing zone. So on top of these source data, right, we'll be building 2 layers of data, 3 layers of data products, producer aligned data products, dimension aligned data products, DADP and then we'll have CADP.
+So this PADP and BADP, you know they'll be made available with an internal market listing so that in future if any other projects require similar data, they can extract it using this data products. CADP is something completely project specific and that will be hosted in a different Snowflake account.
+And that snowflake account and databases and tables will be utilized for all the Power BI development.
+
+Dash, Biru (Contractor)   18:48
+So I just want to add a few things on this one, Ron, as we take this to like whenever we're ready to take this to an automated state, right where data is getting pulled automatically and we we want to scale this to other regions, this sort of.
+Reference architecture tells us how we can do that. So what are the sources? How do we need to replicate? How do we need to create our data products that not only users that already exist today, right? So for example we want.
+Sales pipeline data. So if there is already data products that exist for that, we we can use that for North America. If that they don't exist for Europe, we just need to create them for Europe using the same data products. So this is what kind of you know.
+It's a baseline of what how that solution need to be designed and it it accounts for the scalability needed to create this on a global level.
+And it it tells us from a resourcing standpoint also what sort of resources do we need on the team. So we from a replication, from a data engineering and then from a reporting standpoint looking at the tools looking at.
+
+Gadi, Rohan   19:55
+Yeah.
+
+Dash, Biru (Contractor)   20:08
+What steps that we need to take or, you know, what sort of resources we need. So those are the things, few things that this informs us to do.
+
+Gadi, Rohan   20:18
+Yeah, and and and this is in the final state of full automation, right?
+
+Dash, Biru (Contractor)   20:23
+Yeah, yeah.
+
+Gadi, Rohan   20:24
+OK. And is there from the business perspective, is there still manual intervention required through this through this journey for any kind of validation or or providing any information?
+Or is it all coming from databases?
+
+Dash, Biru (Contractor)   20:44
+So on the left side if you see the where it says manual files, so whatever we whatever and and the list list is there like what files we could not.
+
+Gadi, Rohan   20:44
+Oh, yeah, there it is. So only underlying data would be available. Oh, OK over there. Everything. OK. OK. OK. OK. OK. OK. Yeah, I see. I see it. Yeah.
+
+Dash, Biru (Contractor)   20:56
+We could not see is can be sourced as of today from any source system. Those are listed as manual files. Everything except that are is marked to a source system and for that all of data can be automated in this fashion but for the ones.
+
+Gadi, Rohan   20:58
+OK, available. I mean, all David sentence, all wheels. There we go. OK, I want to see.
+
+Dash, Biru (Contractor)   21:13
+That we did not find any source today, right? That will still be manual and from a validation standpoint, I think that's a like this is the stack, this is the technology stack that we will use, but how will you validate is AI think more of a governance question.
+
+Gadi, Rohan   21:16
+Something, you know, and I will assume that.
+I feel like.
+And once you create these calculations, yeah, yeah, yeah, OK, sure. And you will. Yeah. And again, I was thinking more in for RC because I don't think they have any database. It's mostly all manual stuff. I mean, there is some, but yeah.
+
+Dash, Biru (Contractor)   21:31
+Yeah.
+Yeah, yeah.
+
+Gadi, Rohan   21:44
+Can be part of.
+
+Nidudhavelu, Kaushik (Contractor)   21:45
+Rohan, just to add right, I think for RC it's only the plan by part which is a manual file Excel ones. But for all the other data that you expected right like the backlog order sales for this, you know SAP ECC is the source system.
+So we don't have an issue there, but one common problem that we have across all the business units is the HFM data. So considering you know we do not have this technical feasibility of extracting the data automatically, we'll have to rely on the manual files.
+
+Gadi, Rohan   22:13
+I think it's already sort of, it's perfectly. I'm only let's let's because the whole thing of you know the the adjustments that they do.
+Uh.
+That will not happen in AHFM. It'll always be a manual thing. So margins being down. It's it'll be, for example, yeah, it's not.
+
+Dash, Biru (Contractor)   22:36
+Yeah, yeah, yeah. That's a post processing. I think that that is done manually. So there's no way you can capture that in any source system that.
+
+Nidudhavelu, Kaushik (Contractor)   22:40
+No.
+
+Dash, Biru (Contractor)   22:46
+Until that is, uh, sort of automated, uh, it'll have to be captured as a model.
+
+Gadi, Rohan   22:49
+Yeah, yeah. OK. No, absolutely. I'm just saying that, yeah, it's not great to talk into Baker and it let's succeed and does all of that, you know and.
+
+Nidudhavelu, Kaushik (Contractor)   22:57
+1.
+Thank you. Thanks for chiming in. Okay.
+So again here we have listed the the flow basically we have kind of used this slide to bring out all the data products that we are going to capture. Again this indicator, these are all the data products that we have identified that will be created during the development phase.
+Again, the KPIs that are on top, they're just indicative. We just added the constituents, but the note here is you know all the KPIs will be calculated using these data products.
+OK.
+
+Dash, Biru (Contractor)   23:41
+The key take away from here, this one is that uh.
+We want to build the solution like the the the way the solution is being designed or the the design has been proposed is that you build it once and then use it multiple times like there's reusability in the code. So some of these items that you see here right data opportunity, opportunity split like for.
+Yeah.
+
+Nidudhavelu, Kaushik (Contractor)   24:12
+Velu, we lost you around you.
+
+Dash, Biru (Contractor)   24:21
+Sorry, I think I got dropped for a minute. So what I'm saying is the the core aspect here is reusability and whatever exists today will be reused and whatever new is created will will again.
+Be created in such a way that it can be scaled as you scale to other regions. So that's the only take away from this.
+
+Nidudhavelu, Kaushik (Contractor)   24:54
+Thank you.
+OK.
+Considering the volume of data products, the KPIs and the architecture, right? So we have come up with the tentative plan or the timeline for the North America aftermarket dashboard development.
+So this spans around 22 weeks. So here we have set down, you know the type, each of the layers that we have within CDM, basically data products, the PADP, DADP and CADP. And so basically once those are developed, you know there will be a development that's done the dashboard.
+The changes will be made and at present we have all the we have an MVP which contains that are related to the Excel files. But you know this time that we have on the dashboard development will be utilized to to kind of rebase from what we have in MVP.
+To the strategic solution where the data is extracted from the CADP layers.
+OK.
+And on the same note, this is the resource plan. Again, this is tentative that we have planned. Again, we made certain assumptions on the number of resources. Basically we when we say that 22 weeks for the development, right, that's with an assumption that you know we'll have this particular team mix.
+But then again, maybe when we start with the implementation, we can have further discussions on how further to fine tune it and then you know, agree on this new source mix for the timelines.
+Oh, is there anything that you wanted to add here?
+
+Dash, Biru (Contractor)   26:45
+Yeah, this is the same team mix run that we used for estimating uh during LRP.
+So, so this still is consistent, but I think based on future funding the mix could be you know changed depending on how fast we want to execute. But this is using our the expectation that we set during our LRP discussion.
+Yep, Kashik right.
+
+Nidudhavelu, Kaushik (Contractor)   27:20
+Yeah.
+And also we have added high level basic framework as well at least to ensure that you know we have good governance over the entire project development and we have we ensure timely deliverables on projects. But then again it's still open to discussion once you know once we.
+Zoom or start the implementation phase we can have a look at it.
+OK. So again, Rohan, just to highlight, right, during the initial summary that was given by Veeru, we have highlighted the activities that were done during the discovery phase and some of the activities that we were not able to complete.
+The major ones being the sign offs on the KPI documents and sign offs on architecture and the data models piece. So once we get on to this implementation phase right, So what we need to do is we need to have regular.
+Connects with the required business holders and we should ensure that all the KPIs definitions are agreed upon and that will be taken to the dashboard development. Along with that the tech stack we have agreed on this high level architecture, but it's as of now.
+
+Gadi, Rohan   28:43
+They look right. We every time we would promise it in the winter and we're like, oh, this is how we thought about it. I'm four or five months ago. So we remember that and we had odds. We worked on the June. We 13.
+
+Nidudhavelu, Kaushik (Contractor)   28:44
+But maybe it there might be changes to that architecture based on when we are starting the implementation. But when we get into that phase, we would have to have a relook at the architecture or talk to the architecture team and finalize the architecture and then go ahead with the development.
+
+Gadi, Rohan   29:01
+On this one, can we just just call out the steps that are still pending or all of this is pending? How do I read this page?
+
+Nidudhavelu, Kaushik (Contractor)   29:02
+OK.
+Yeah, the I won't say pending. This is basically a regular support that we kind of expect during the implementation phase and also post implementation like maintenance of the templates.
+
+Gadi, Rohan   29:16
+So that is the reason we're working on. I disagree, but I'll play some areas.
+
+Nidudhavelu, Kaushik (Contractor)   29:30
+OK. And during the implementation, maybe readiness of the tools, connectivity, these are all some of the technical dependencies that we have with the technology teams. So what?
+
+Gadi, Rohan   29:33
+So we like, uh, I know we shuffling. I mean we we're tracking a lot. So what I would what I would do is like for each of these buckets maybe just call out who is the support required from. So like project governance, governance and support I'm assuming is from the business.
+The the middle 2 buckets I guess is from I I don't know maybe from the team that will do the full scale and stuff performance targets. I guess that'll be me something like that you know like so who needs to do this? Also I think that piece should be added on this page.
+
+Nidudhavelu, Kaushik (Contractor)   30:12
+Oh.
+
+Gadi, Rohan   30:12
+Here we will see that.
+
+Nidudhavelu, Kaushik (Contractor)   30:12
+Oh.
+
+Dash, Biru (Contractor)   30:14
+Yeah, I think some some of that is mentioned like for example the data modeling provision and maintenance of Excel templates by business owners. Similar to that, Kashi, let's be explicit like for each of these things who you know, like who is the support needed from?
+Like from architecture standpoint maybe the the enterprise architect and data architect. So we can just say by you know support needed from this this individual.
+
+Nidudhavelu, Kaushik (Contractor)   30:45
+Sure, maybe we'll try and call out the teams or the certain functions from where we need the support from and then we can kind of.
+
+Dash, Biru (Contractor)   30:53
+Yeah, and it it could.
+We could map it to the RACI slide that we have, right? So all the teams that we have in the RACI, let's attach each of these support requests to one of those roles.
+
+Nidudhavelu, Kaushik (Contractor)   31:11
+Yeah.
+
+Dash, Biru (Contractor)   31:12
+And then again, uh, just to set the console like this, this is when that like this is you can see entire this entire deck is a package of you know when we are ready to implement.
+This is what the team needs to do use to move forward, right? So whenever they start, whenever the implementation start, this sort of support would be needed is what I think the team is trying to highlight here.
+On these four aspects.
+But we can be more explicit on like from what role as well, yeah.
+
+Nidudhavelu, Kaushik (Contractor)   31:53
+Yep. So yeah, within this you have called out during the implementation, the support that we would need and also after implementation what needs to be done? Because you know some of the data sources are not strategic. We don't have a strategic source. There are some manual files that needs to be maintained. So there will be some implementation now.
+Post implementation support or the business activities that business teams and needs to pick up. OK, so we kind of called them out here, but again, this is how do I put it?
+This is more like an assumption that we have based on the knowledge we have right now, but once you start the implementation there might be slight modifications to this.
+
+Dash, Biru (Contractor)   32:43
+Yeah. And so I think the the key take away from this is like as we execute there are since there are multiple business units, multiple business owners and multiple technical teams that you have to interact with, right this this sort of gives.
+A view of what sort of collaboration is needed ongoing.
+Like the the COA is known. As you can see there are multiple COAS within the CI. So for each element there is a different COA that needs to give a sign off and make sure you know what you're building is.
+Aligned with the overall you know enterprise architecture, right. So that's that's what this slide is showing that you know from business perspective this is, this is the collaboration that is needed. From technical perspective, this is the collaboration that is needed.
+During and after uh implementation.
+So like we had, we did the legwork that often is required whenever you start a new project on what, what are those, who are the stakeholders that we need to work with and how frequently and for what purpose so that that's exactly what this list.
+
+Gadi, Rohan   33:58
+Yeah, I would just so maybe it's it's a backup page to this and maybe you already have it, but like for each of the regions like CSACSE, this list out.
+All the different stakeholders like literally by name and whenever we don't have a name then we can just say like this, this function or this role, just I mean I just want to give that to the businesses as well. So if you can just create that kind of a map, it's similar to the AC but like wherever we know name.
+
+Dash, Biru (Contractor)   34:24
+Yeah.
+Yeah, yeah.
+
+Gadi, Rohan   34:34
+Things like this is more specific, like this person kind of a thing. OK, good. So we'll go there, but at least you know, we're getting on so we can include the.
+
+Dash, Biru (Contractor)   34:37
+Yeah, yeah, we can do that.
+OK.
+And Kaushik, do you mind maybe showing one KPIBID how it looks?
+
+Nidudhavelu, Kaushik (Contractor)   34:48
+Hey, that's all.
+Yep, give me a second.
+
+Gadi, Rohan   34:55
+Mm.
+So yeah, you you have so.
+
+Dash, Biru (Contractor)   35:03
+So Ron, as the team is getting sort of off boarded right, I want to point you to this KPI BRD's which documents again as you have this discussion with other regions.
+
+Gadi, Rohan   35:07
+It is.
+
+Dash, Biru (Contractor)   35:16
+Aligning on how the KPIs are defined is an important aspect, right? So this KPI BRDS are they they, you know, explicitly define how we have defined KPI for the North for North America market and how they are going to be derived from the source system. So the.
+
+Gadi, Rohan   35:20
+But all the good stuff and if I can ask you to and that's really what I'd really love to see the the.
+
+Dash, Biru (Contractor)   35:36
+The definitions and the mappings are all in the same same BRD. You can use that to drive discussion with other regions.
+
+Gadi, Rohan   35:39
+So.
+Thank you and process. So if a lot of default assumption will lighten up, it's OK. Maybe we can establish something like that.
+
+Nidudhavelu, Kaushik (Contractor)   35:49
+Rohan, this is just an example. We added that they open for GAP to plan. This is for CCS. So we have kind of documented what the definition is formula, the product lines in school and then what's the frequency of the calculation? How are we doing that in the visualization you know for the Power BI dashboard?
+
+Gadi, Rohan   36:01
+That would mean work.
+OK.
+
+Nidudhavelu, Kaushik (Contractor)   36:09
+What are all that we are planning to display and then what's the data that is needed to come up with this calculation?
+
+Gadi, Rohan   36:19
+Hello.
+
+Nidudhavelu, Kaushik (Contractor)   36:22
+OK, so all of these, these are all part tracked as part of these deliverables. Uh, sorry, were you saying something?
+
+Dash, Biru (Contractor)   36:23
+So send it.
+It can be.
+
+Gadi, Rohan   36:26
+And to be honest.
+Mhm.
+
+Dash, Biru (Contractor)   36:29
+So just to just to summarize like in that example, right Kaushik, can you go to the captive plan? It also lays out the scenarios in HFM that you need to use. So when we discuss this with Europe, if if if it is also captured in HFM, we can compare.
+
+Nidudhavelu, Kaushik (Contractor)   36:35
+Yeah.
+
+Gadi, Rohan   36:42
+Mm.
+Yeah.
+
+Dash, Biru (Contractor)   36:47
+If the scenarios match.
+
+Gadi, Rohan   36:48
+Yeah, yeah. I mean, might be different to be honest, but at least it's a starting point.
+
+Dash, Biru (Contractor)   36:52
+Yeah.
+So, so that way for every single like 60 KPIs right, there is a BRD in that folder and so that can be used as a baseline for the conversations.
+
+Gadi, Rohan   36:58
+And I will not be shy and everyone else from last week, seriously.
+
+Nidudhavelu, Kaushik (Contractor)   37:15
+Yeah, we have. I'll share the link to the deliverable as well within this group chat.
+
+Dash, Biru (Contractor)   37:21
+Yeah.
+Yeah, I think that's all, you know, I wanted the team to present and I know we are at a pause right now, but this was mostly to share on the the the legwork on.
+What needs to be done and how was done? It just needs to be done. So the implementation is the only part that is pending. A lot of this could be be used. A lot of this could be used when the implementation team is on the ground and they're ready to execute.
+
+Gadi, Rohan   38:02
+Yeah, no, I I mean, I hate to say this, but yeah, this thing is so this whole thing with the budget is is crazy to be honest. I spoke to Ajay yesterday again and he's like, yeah, I'm following up, but so I hate to lose the momentum, but honestly don't see what else we can do at this point.
+
+Dash, Biru (Contractor)   38:10
+Yeah.
+Yeah, yeah.
+
+Gadi, Rohan   38:22
+So, so this would be clear be to like the full team is rolling off or do we still have some folks?
+
+Dash, Biru (Contractor)   38:28
+Um.
+So, so the the team that was focused on discovery that is rolling out, so including Kaushik, Ashwini and Amrut, I'll have to check, I'm not sure.
+
+Gadi, Rohan   38:36
+OK, OK.
+So.
+We can maybe discuss this more like later today at when we have to say the call rate. So this is agree on what what who is there and what can we do from here on and if there's the full pause and I I I don't know to be honest so.
+
+Dash, Biru (Contractor)   38:46
+Yeah, yeah, yeah, yeah, yeah.
+Sure, sure.
+Yeah, yeah, yeah.
+
+Gadi, Rohan   38:58
+Let's just see. Because even from the transportation side, Todd pinged me saying I had the preliminary discussion with the team. They're all excited. So I didn't even respond to them. I didn't know what to say. I was like, OK, but yeah, let's get that alignment today for sure.
+
+Dash, Biru (Contractor)   39:11
+Yeah.
+OK.
+Yeah. With that, I think, thank you, team. Thanks, Kaushik, for putting all of this together. All the hard work, yeah.
+
+Gadi, Rohan   39:20
+No, really, really good stuff. And yeah, I really appreciate putting this document together and all the the the detailed documents behind it. I I know it's a lot of work, so thank you for doing that.
+
+Nidudhavelu, Kaushik (Contractor)   39:35
+Thanks, Rohan. Thanks. Thanks for all the support.
+
+Dash, Biru (Contractor)   39:39
+And thank you Amrut and Rashwini for all the support and Ramakanth, thanks for.
+You know, guiding Kaushik and the rest of the team.
+All right. With that, the close. Thank you.
+
+Gadi, Rohan   39:53
+Awesome. All right. Thank you, everybody.
+
+Nalam, Ramakanth (Contractor)   39:57
+Thank you. Ohh
+
+Nidudhavelu, Kaushik (Contractor)   39:58
+Thank you everyone.
+
+Surya Narayana, Ashwini   39:59
+Thank you.
+
+Dash, Biru (Contractor) stopped transcription

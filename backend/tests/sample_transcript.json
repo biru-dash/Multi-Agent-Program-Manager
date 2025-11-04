@@ -1,0 +1,47 @@
+{
+  "meeting_title": "Product Review Meeting",
+  "date": "2024-10-15",
+  "participants": ["Alice", "Bob", "Charlie"],
+  "segments": [
+    {
+      "speaker": "Alice",
+      "text": "Let's review the Q4 product roadmap. We need to make some decisions today.",
+      "timestamp": "00:00:05"
+    },
+    {
+      "speaker": "Bob",
+      "text": "I think we should prioritize the mobile app feature. It was agreed in the last meeting that mobile is important.",
+      "timestamp": "00:01:20"
+    },
+    {
+      "speaker": "Charlie",
+      "text": "Yes, we decided to focus on mobile. But there's a concern about the timeline - we might not have enough resources.",
+      "timestamp": "00:02:15"
+    },
+    {
+      "speaker": "Alice",
+      "text": "That's a valid risk. Charlie, can you create a resource plan?",
+      "timestamp": "00:03:00"
+    },
+    {
+      "speaker": "Charlie",
+      "text": "I will create the resource plan and send it by Wednesday.",
+      "timestamp": "00:03:30"
+    },
+    {
+      "speaker": "Bob",
+      "text": "I'll review Charlie's plan and provide feedback by Friday. Also, I need to update the product specifications.",
+      "timestamp": "00:04:10"
+    },
+    {
+      "speaker": "Alice",
+      "text": "Perfect. Bob will review by Friday, and I'll handle the client communication. Let's approve the mobile app priority.",
+      "timestamp": "00:05:00"
+    },
+    {
+      "speaker": "All",
+      "text": "Agreed.",
+      "timestamp": "00:05:30"
+    }
+  ]
+}

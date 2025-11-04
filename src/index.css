@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 271 81% 56%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 189 94% 43%;
+    --accent-foreground: 222 47% 11%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    /* Agent state colors */
+    --agent-idle: 215 20% 65%;
+    --agent-processing: 189 94% 43%;
+    --agent-success: 142 71% 45%;
+    --agent-error: 0 84% 60%;
+
+    /* Workflow colors */
+    --workflow-connection: 217 91% 60%;
+    --workflow-node-bg: 217 33% 17%;
+    --workflow-node-border: 215 28% 25%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%));
+    --gradient-flow: linear-gradient(90deg, hsl(217 91% 60% / 0), hsl(189 94% 43%), hsl(217 91% 60% / 0));
+    
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsl(217 91% 60% / 0.3);
+    --shadow-node: 0 8px 32px hsl(217 91% 60% / 0.15);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -1,0 +1,356 @@
+﻿Multi-Agent Program Manager Assistant
+Problem statement (The Why)
+Senior PMs running large, cross-functional programs need a consistent, auditable, low-friction way to capture decisions, enforce follow-through, surface program risk, and answer leadership with provenance — across many clients and toolchains. Building bespoke integrations each time is costly. We need a repeatable accelerator that Tiger Analytics can deploy inside client environments to accelerate delivery, reduce implementation friction, and preserve client data residency and security controls.
+Background
+Responsibilities of a Program Manager
+Data & AI program managers sit at the intersection of data engineering, business operations (e.g., supply chain, marketing, quality), and change management.
+A successful SPM drives both delivery and adoption of insights and AI capabilities across global business units.
+
+
+Responsibility Area
+	Responsibilities
+	Strategic Alignment
+	Define program vision, outcomes, KPIs (e.g., forecast accuracy, recall rate, supply efficiency). Ensure every project aligns to business strategy.
+	 Planning & Scoping
+	Build master schedule across multiple AI projects — define milestones, interdependencies, resource plans, and critical paths.
+	Project Tracking & Delivery Management
+	Oversee execution against plans — monitor timelines, milestones, deliverable quality, risks, and issues. Maintain a single source of truth across markets, vendors, and data team
+	Risk, Issue & Change Management
+	Identify risks early, maintain risk logs, run governance forums, and manage scope changes.
+	Stakeholder & Communication Management
+	Run cadence meetings, summarize progress, escalate critical blockers, and maintain transparent communication with executives and partners.
+	Value Realization & Reporting
+	Quantify program ROI — savings, efficiencies, new insights realized — and feed that back into prioritization.
+	Adoption & Change Enablement
+	Drive user adoption of AI tools; ensure process integration and feedback loops from planners, analysts, and plant operators.
+	Team Leadership & Mentorship
+	Coach project leads, set delivery discipline, and embed best practices in program governance.
+	Continuous Improvement
+	Identify process inefficiencies, automation opportunities, and lessons learned to improve the next program cycle.
+	________________
+AI Companion Agents for Program Management (The What)
+Goals of the accelerator
+* A productized, multi-agent platform that automatically captures meetings, extracts decisions & actions, links artifacts to trackers, indexes knowledge for RAG queries with provenance, and surfaces program health.
+
+
+* Ship-ready assets for Tiger Analytics engagements: Helm charts, Terraform modules (cloud-agnostic), connector SDK, pre-trained NLP models with fine-tuning pipelines, review UI, runbooks, and playbooks for pilot-to-production.
+
+* Client-hosting-first design: deploys into client-managed infrastructure (VPC, tenant cloud accounts, or on-prem) with strict tenancy, secrets, and compliance controls.
+
+
+What could the AI companion agents be:
+
+
+Human PM Function
+	AI Agent
+	Automation/Augmentation
+	Privileges Required
+	Project Scheduling & Tracking
+	Execution Agent
+	Auto-ingests data from Jira/Azure DevOps/Smartsheet; visualizes program Gantt, milestone health, and delay predictions.
+	Read-only to project tools APIs.
+	Meeting Insights & Decision Logging
+	Meeting Intelligence Agent
+	Processes meeting recordings/transcripts; extracts decisions, blockers, risks, owners, action items.
+	Read-only to transcripts; no live call access.
+	Requirement Extraction
+	Requirement Extraction Agent
+	Converts discussions into structured high-level requirements or Jira tickets.
+	Read-only transcripts, write-only to backlog (via API).
+	Knowledge Organization
+	Knowledge Curator Agent
+	Auto-classifies artifacts (recordings, decks, docs) by project, date, or topic in shared drive.
+	Write-only to central repo; read-only to tagged artifacts.
+	Program Knowledge Graph
+	Knowledge Graph Agent
+	Builds searchable map linking meetings → decisions → actions → outcomes → risks.
+	Read-only to structured metadata; no access to raw files.
+	Risk & Issue Management
+	Risk Intelligence Agent
+	Detects recurring risks from transcripts, delivery logs, dependency data. Suggests mitigations.
+	Read-only to risk log + meeting summaries.
+	Dependency Management
+	Dependency Agent
+	Tracks inter-project or data dependencies (e.g., feed readiness → model training → dashboard).
+	Read-only to data lineage + project tracker.
+	Resource Utilization
+	Resource Optimization Agent
+	Monitors workload balance, predicts resource contention, suggests reallocation.
+	Read-only to team assignment + velocity data.
+	Progress Reporting
+	Comms Agent
+	Drafts weekly updates, leadership decks, and program summaries based on all agents’ inputs.
+	Read-only to agent outputs; write-only to slide/report templates.
+	Timeline Optimization
+	Predictive Timeline Agent
+	Uses historical delivery data to predict milestone success and re-prioritize backlog.
+	Read-only to project logs.
+	Financial Tracking
+	ROI & Budget Agent
+	Tracks spend vs outcomes; correlates cost per model/use case, efficiency gains..
+	Read-only to budget + KPI systems.
+	Program Orchestration
+	Orchestrator Agent
+	Synthesizes insights from all agents to produce a single “Program Command Center” dashboard.
+	Read-only to all other agents’ structured outputs.
+	Governance & Change Control
+	Governance Agent
+	Monitors scope changes, version control of deliverables, and approval workflows.
+	Read/write to change logs only.
+	Stakeholder Engagement
+	Stakeholder Sentiment Agent
+	Analyzes tone and participation in meeting transcripts/emails; flags disengagement or conflicts.
+	Read-only to comms metadata + transcripts.
+	Benefits Realization
+	Value Realization Agent
+	Tracks achieved outcomes (e.g., improved forecast accuracy, reduced waste) vs business case targets.
+	Read-only to KPI systems.
+	Compliance & Data Privacy
+	Data Compliance Agent
+	Ensures project artifacts and data sources comply with internal and regulatory policies.
+	Read-only to metadata and access logs.
+	
+
+Agentic AI Information Flow Diagram
+Logical Data Flow
+  Accelerator Core Features
+   1. Capture & Ingest 
+   1. Calendar-driven auto-ingest (Teams/Zoom/Google Meet connectors via MCP): scheduled fetch of recordings + transcripts + meeting metadata (title, participants, tags).
+   2. Manual upload & drag-drop flows (pptx, pdf, docx, mp4, wav): support for SharePoint/OneDrive/Confluence and local upload.
+   3. Webhook triggers & upload hooks: auto-run processors when new artifacts appear.
+
+      2. Media & Transcript Management
+      1. Timestamped, diarized transcripts (speaker-attribution + confidence).
+      2. Clippable excerpts: store precise clip start/end + thumbnail + transcript excerpt; jump-to-clip from UI.
+      3. Redaction & PII masking: configurable masking/obfuscation before storage or exposure.
+
+         3. Extraction & Human-in-the-loop
+         1. Decision, action-item, open-question, risk extraction with confidence scores.
+         2. Requirement derivation: generates candidate user stories / acceptance criteria.
+         3. Organizer Review UI: edit / approve / publish workflow, change-history, configurable SLAs and required approvals.
+         4. Assisted labeling mode to improve models with minimal human correction.
+
+            4. Integrations & Orchestration
+            1. Two-way sync to Jira/ADO/GitHub Issues, auto-attach decision context to PRs/stories.
+            2. Attach monitoring/CI/ML artifacts to decisions (Airflow run IDs, MLFlow experiment refs).
+
+               5. Knowledge & Retrieval
+               1. Vector-indexed knowledge base (semantic embeddings + metadata).
+               2. Provenanced RAG chat: LLM answers cite the source transcript clip, slide, or decision log and provide jump-to-clip.
+               3. Knowledge Graph: links decisions → actions → owners → artifacts → outcomes.
+
+                  6. Integrations & Orchestration
+                  1. MCP gateway + connector SDK (SharePoint, Confluence, Jira, ADO, GitHub, Slack, BI tools, MLFlow, Airflow).
+                  2. Two-way sync with issue trackers: create/update stories/PRs and auto-attach decision context (clips, summary, relevant docs).
+                  3. Artifact linking: attach run IDs, MLFlow refs, Airflow DAG runs, build/CI links to decisions/stories.
+                  1.                   7. Program Ops & Governance
+                  1. Decision log & traceability (immutable base + versioned edits).
+                  2. Change control workflows (scope change capture, approval, cost/time impact tagging).
+
+                     8. Value, Financials & Metrics
+                     1. ROI & budget tracking: map decisions/features → cost & realized KPI deltas.
+                     2. Adoption & engagement metrics: clip opens, action-item closures, RAG usage stats.
+
+                        9. Deployment & Delivery Experience
+                        1. Single-tenant by default; multi-tenant optional (tenant isolation & per-tenant configs).
+                        2. Local dev stack (docker-compose / dev scripts) for feature dev & testing.
+                        3. Prebuilt templates: release checklist, retrospective, decision log schema, meeting templates.
+
+                           10. Developer & Delivery Experience
+                           1. Connector SDK, sample templates, scripted tests, simulated data pipeline to validate integrations.
+                           2. Pre-labeled training dataset from internal pilots to bootstrap NLP.
+                           3. Calendar-driven auto-ingest, file upload, and manual upload flows.
+                           4. Timestamped, diarized transcripts, and excerptable clips saved to object store.
+
+                              11. Developer & Data Science Experience
+                              1. Connector SDK + sample connectors (MCP tool definitions).
+                              2. Scripted integration tests + simulated data pipeline (synthetic transcripts, events).
+                              3. Pre-labeled training dataset from pilots and tooling to bootstrap NLP models.
+________________
+Technical & Architecture Design (The How)
+Architecture Principles
+                              1. Artifact-Driven Processing: All cognitive extraction is done post-factum using enterprise-approved transcripts and recordings already stored in M365, GCP, or AWS S3.
+
+                              2. Scoped API Access: Each agent has narrowly scoped, project-level credentials (e.g., service principal with read-only rights to one folder).
+
+                              3. No Persistent Raw Data Storage: Transcripts and recordings are processed into structured summaries (e.g., decisions, risks, actions). The raw text or audio is discarded or anonymized after processing.
+
+                              4. Full Auditability: Every agent’s action (data read, summary generation, file write) is logged in an audit trail.
+
+                              5. Human-in-the-loop Oversight: Before summaries or extracted requirements are published, they’re optionally validated by a designated PM or BA.
+High-level design
+Architecture layers:
+                                 * Ingest Layer (MCP connectors)
+                                 * Processing Layer (Agents / LLM + NLP pipelines)
+                                 * Storage Layer (object store + vector DB + relational metadata store + KG store)
+                                 * Orchestration & Messaging (event bus, job scheduler)
+                                 * API & Application Layer (Orchestrator, UI, SDK)
+                                 * Security & Governance (IAM, audit logs, data masking)
+                                 * DevOps (CI/CD, infra-as-code, local dev)
+Possible technologies that may be used
+                                 * Object storage (artifacts, audio, transcripts)
+                                 * Self-host: MinIO (S3-compatible)
+                                 * Managed: AWS S3 / Azure Blob / GCS (via S3 or native)
+                                 * Relational metadata store
+                                 * Self-host: Postgres
+                                 * Managed: RDS/Azure Database / Cloud SQL
+                                 * Vector DB (embeddings)
+                                 * Self-host: Milvus / Vespa / PGVector (Postgres extension)
+                                 * Managed: Pinecone, Qdrant Cloud
+                                 * Knowledge Graph DB
+                                 * Self-host: Neo4j or Amazon Neptune (if cloud) / JanusGraph
+                                 * Message bus / Eventing
+                                 * Self-host: Kafka / Redpanda or NATS JetStream
+                                 * Managed: Confluent, AWS MSK
+                                 * Work orchestration / job scheduler
+                                 * Self-host: Airflow / Prefect
+                                 * Managed: Cloud Composer / Managed Prefect
+                                 * LLM / Embedding models
+                                 * Local: open-source LLMs (e.g., Llama-based, Mistral), SentenceTransformers for embeddings (runs on GPUs).
+                                 * Hosted: OpenAI/Gemini/Azure OpenAI with MCP-style proxy.
+                                 * Important: keep model-agnostic abstraction layer (model adapter).
+                                 * MCP Context Gateway
+                                 * Implement as a modular microservice exposing tool endpoints (file access, project API, meeting API). Make it pluggable.
+                                 * Search / full-text
+                                 * ElasticSearch / OpenSearch for transcript text and metadata queries.
+                                 * API & UI
+                                 * Backend: Node.js (TypeScript) or Python FastAPI.
+                                 * Frontend: React (Tailwind); include review UI, dashboards, and admin consoles.
+                                 * Auth & SSO
+                                 * OIDC/SAML support via Keycloak (self-host) or Azure AD / Okta in client. RBAC + ABAC policies.
+                                 * Audit & Observability
+                                 * Prometheus + Grafana, ELK for logs; audit trail stored in immutable store (optionally with WORM).
+                                 * CI/CD & Infra-as-code
+                                 * Terraform (cloud-agnostic) + Helm charts + GitOps (ArgoCD) or simple pipeline for local dev.
+                                 * Container runtime
+                                 * Docker for local; Kubernetes (EKS/AKS/GKE/On-prem K8s) for production.
+
+
+Technical Data Flow Diagram
+  
+
+
+
+________________
+Prioritized Implementation Roadmap (The When)
+Minimum Viable Product (MVP)
+Goal: The MVP focuses on converting meetings into structured, traceable actions and generating immediate visibility for program stakeholders.
+
+
+                                 1. Meeting Intelligence Agent (MIA)
+Inputs: transcripts, recordings from approved repo.
+Outputs: meeting summaries, decisions, action items, risks, owners (with confidence).
+
+                                 2. Requirement Extraction Agent
+Inputs: MIA outputs + meeting notes.
+Outputs: draft stories/backlog items (create in Jira via MCP).
+
+                                 3. Comms Agent (light)
+Inputs: MIA + Execution.
+Outputs: weekly status email + exec one-pager template.
+
+
+Phase 2
+                                    4. Knowledge Curator Agent
+Function: Indexes artifacts into the program repository and tags metadata for semantic search.
+Inputs: raw artifacts (docs, PDFs, slides, recordings).
+Outputs: indexed program repository, metadata tags, semantic labels.
+
+                                    5. Knowledge Graph Agent
+Function: Builds semantic links across decisions, actions, artifacts, and owners.
+Inputs: extracted decisions, actions, artifacts, owners (from MIA + Knowledge Curator).
+Outputs: searchable knowledge graph linking decisions → actions → owners → artifacts → outcomes
+
+
+                                       6. Dependency Agent
+Function: Maps cross-stream dependencies and alerts cascading impacts to relevant stakeholders.
+Inputs: program artifacts, knowledge graph, project metadata (from MCP).
+Outputs: inter-project dependency maps, alerts for cascading impacts on timelines or deliverables.
+
+
+                                          7. Risk Intelligence Agent (enhanced)
+Inputs: MIA outputs + project metadata + historical risk patterns.
+Outputs: recurring risk signals, early warning flags, suggested mitigation plans..
+                                          8. Execution Agent
+Inputs: Jira/ADO/Smartsheet metadata via MCP.
+Outputs: program Gantt, milestone health, slippage alerts.
+
+
+
+
+Risks & Mitigations
+
+
+Risk
+	Mitigation
+	LLM hallucination in requirement extraction
+	show confidence + require human approval + provenance links (clip + doc).
+	PII leakage
+	MCP masking + field encryption + redact by default.
+	Integration complexity across clients
+	connector SDK + MCP abstract layer + prebuilt adapters.
+	Model drift & performance
+	active learning loop, assisted labeling, continuous evaluation.
+	
+
+
+
+
+
+________________
+
+
+Sprint Plan
+Sprint 1
+Goal: Build a local prototype of Meeting Intelligence Agent (MIA) and Requirement Extraction Agent (REA). The Meeting Intelligence Agent parses meeting transcripts to extract summaries, decisions, actions, risks. The Requirement Extraction Agent converts MIA outputs into high-level requirement statements or draft Jira stories.
+
+
+Features in scope:
+
+
+Capability
+	Feature
+	Description
+	Input/Data handling
+	Data Input
+	Load static transcripts
+	Preprocessing
+	Clean and chunk text
+	Meeting Intelligence Agent
+	LLM-driven extraction
+	Generate concise summary, decisions, action items, risks and owners
+	Json output schema
+	Structured output: {summary, decisions[], actions[], risks[], sentiment}.
+	Human Markdown review 
+	Creates a readable report with bullets for manual validation.
+	Requirements Extraction Agent
+	Requirements transformation
+	Converts actions/decisions into high-level requirements or user stories using prompt templates.
+	Auto-Story Generation
+	Generates: Title, Description, Acceptance Criteria, Priority.
+	Local Export
+	Saves to /outputs/requirements.json and /outputs/requirements.md.
+	UI
+	React
+	Upload transcript → click “Process” → view MIA + REA outputs side-by-side.
+	
+
+Tools & Technologies
+
+
+Category
+	Tool/Technology
+	Programming language
+	Python 3.10+
+	LLM Inference
+	Hugging Face Inference API/OLLama
+	Pipeline Orchestration
+	Python + LangChain or LlamaIndex
+	Frontend 
+	React/n8n
+	Storage
+	Local JSON
+	Containerization 
+	Docker
+	Version control
+	Github

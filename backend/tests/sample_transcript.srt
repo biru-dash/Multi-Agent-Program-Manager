@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:05,000
+Alice: Welcome everyone to the team standup meeting.
+
+2
+00:00:05,500 --> 00:00:12,000
+Bob: I finished the login feature yesterday. It's ready for testing.
+
+3
+00:00:12,500 --> 00:00:18,000
+Charlie: Great! I decided we should test it this week. Can someone help?
+
+4
+00:00:18,500 --> 00:00:25,000
+Diana: I will test the login feature by Thursday. I'll report any issues.
+
+5
+00:00:25,500 --> 00:00:32,000
+Alice: Good. Also, there's a risk we identified with the deployment process.
+
+6
+00:00:32,500 --> 00:00:40,000
+Bob: Yes, the deployment might fail if we don't update the configuration. I'll investigate this.
+
+7
+00:00:40,500 --> 00:00:47,000
+Charlie: Bob will investigate the deployment risk, and Diana will test by Thursday. Sounds good.
+
+8
+00:00:47,500 --> 00:00:52,000
+Alice: Perfect. Let's reconvene next Monday.
