@@ -5,6 +5,17 @@ export interface UploadResponse {
   upload_id: string;
   filename: string;
   size_mb: number;
+  source?: string;
+}
+
+export interface TranscriptFile {
+  filename: string;
+  size_mb: number;
+  path: string;
+}
+
+export interface TranscriptListResponse {
+  files: TranscriptFile[];
 }
 
 export interface JobStatus {
@@ -31,6 +42,11 @@ export interface MIAResults {
   }>;
   risks: Array<{
     risk: string;
+    category?: string;
+    priority?: string;
+    impact?: string | null;
+    mitigation?: string | null;
+    owner?: string | null;
     mentioned_by: string | null;
     confidence: number;
   }>;
@@ -47,6 +63,60 @@ class MIAService {
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
+  }
+
+  /**
+   * List available transcript files from meeting_transcripts folder
+   */
+  async listTranscripts(): Promise<TranscriptFile[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/transcripts`);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to list transcripts');
+      }
+      
+      const data: TranscriptListResponse = await response.json();
+      return data.files;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error(
+          `Cannot connect to backend at ${this.baseUrl}. ` +
+          `Make sure the backend server is running on port 8000.`
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Select a transcript file from meeting_transcripts folder
+   */
+  async selectTranscript(filename: string): Promise<UploadResponse> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/api/transcripts/select?filename=${encodeURIComponent(filename)}`,
+        {
+          method: 'POST',
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to select transcript');
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error(
+          `Cannot connect to backend at ${this.baseUrl}. ` +
+          `Make sure the backend server is running on port 8000.`
+        );
+      }
+      throw error;
+    }
   }
 
   /**

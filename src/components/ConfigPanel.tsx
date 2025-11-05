@@ -34,7 +34,7 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
               Model Strategy
             </Label>
             <Select
-              value={config.modelStrategy || 'hybrid'}
+              value={config.modelStrategy || 'local'}
               onValueChange={(value: 'local' | 'remote' | 'hybrid') =>
                 onConfigChange({ ...config, modelStrategy: value })
               }
@@ -43,13 +43,13 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
-                <SelectItem value="hybrid">Hybrid (Recommended)</SelectItem>
-                <SelectItem value="local">Local Models Only</SelectItem>
+                <SelectItem value="local">Local Models Only (Testing)</SelectItem>
+                <SelectItem value="hybrid">Hybrid (API + Local Fallback)</SelectItem>
                 <SelectItem value="remote">HuggingFace API Only</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Hybrid uses local models for extraction, HF API for summarization
+              Local: All models run locally. Hybrid: API for summarization, local for extraction.
             </p>
           </div>
 

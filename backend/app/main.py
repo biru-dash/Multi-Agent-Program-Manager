@@ -18,13 +18,28 @@ app.add_middleware(
         "http://localhost:3000",  # Alternative React dev server
         "http://localhost:8080",  # Vite custom port
         "http://localhost:8081",  # Vite alternative port
+        "http://localhost:8082",  # Vite alternative port
+        "http://localhost:8083",  # Vite alternative port
+        "http://localhost:8084",  # Vite alternative port
+        "http://localhost:8085",  # Vite alternative port
+        "http://localhost:8086",  # Vite alternative port
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8081",  # Frontend port
+        "http://127.0.0.1:8082",
+        "http://127.0.0.1:8083",
+        "http://127.0.0.1:8084",
+        "http://127.0.0.1:8085",
+        "http://127.0.0.1:8086",
         "http://[::1]:5173",  # IPv6 localhost
         "http://[::1]:8080",
         "http://[::1]:8081",
+        "http://[::1]:8082",
+        "http://[::1]:8083",
+        "http://[::1]:8084",
+        "http://[::1]:8085",
+        "http://[::1]:8086",
     ],
     allow_credentials=True,
     allow_methods=["*"],

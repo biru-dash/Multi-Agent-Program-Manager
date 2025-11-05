@@ -1,8 +1,9 @@
 """FastAPI routes for Meeting Intelligence Agent."""
 import asyncio
+import json
 import uuid
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -27,11 +28,94 @@ storage = StorageManager(
     upload_dir=settings.upload_dir
 )
 
+# Meeting transcripts folder path (relative to backend directory)
+MEETING_TRANSCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "meeting_transcripts"
+MEETING_TRANSCRIPTS_DIR.mkdir(exist_ok=True)
+
 
 class ProcessRequest(BaseModel):
     """Request model for processing."""
     model_strategy: Optional[str] = "hybrid"
     preprocessing: Optional[str] = "advanced"
+
+
+@router.get("/transcripts")
+async def list_transcripts():
+    """List available transcript files from meeting_transcripts folder."""
+    try:
+        transcript_files = []
+        allowed_extensions = {'.txt', '.json', '.srt'}
+        
+        if not MEETING_TRANSCRIPTS_DIR.exists():
+            return {"files": []}
+        
+        for file_path in MEETING_TRANSCRIPTS_DIR.iterdir():
+            if file_path.is_file() and file_path.suffix.lower() in allowed_extensions:
+                file_size = file_path.stat().st_size
+                transcript_files.append({
+                    "filename": file_path.name,
+                    "size_mb": round(file_size / (1024 * 1024), 2),
+                    "path": str(file_path.relative_to(MEETING_TRANSCRIPTS_DIR.parent))
+                })
+        
+        # Sort by filename
+        transcript_files.sort(key=lambda x: x["filename"])
+        
+        return {"files": transcript_files}
+    except Exception as e:
+        print(f"Error listing transcripts: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error listing transcripts: {str(e)}")
+
+
+@router.post("/transcripts/select")
+async def select_transcript(filename: str = Query(...)):
+    """Select a transcript file from meeting_transcripts folder and prepare it for processing."""
+    try:
+        file_path = MEETING_TRANSCRIPTS_DIR / filename
+        
+        # Security check: ensure file is within the allowed directory
+        if not file_path.exists() or not str(file_path).startswith(str(MEETING_TRANSCRIPTS_DIR)):
+            raise HTTPException(status_code=404, detail=f"Transcript file '{filename}' not found")
+        
+        # Validate file extension
+        allowed_extensions = {'.txt', '.json', '.srt'}
+        if file_path.suffix.lower() not in allowed_extensions:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
+        # Check file size
+        file_size = file_path.stat().st_size
+        file_size_mb = file_size / (1024 * 1024)
+        
+        if file_size_mb > settings.max_file_size_mb:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File too large. Max size: {settings.max_file_size_mb}MB"
+            )
+        
+        # Read file and create upload_id (reuse existing storage mechanism)
+        with open(file_path, 'rb') as f:
+            contents = f.read()
+        
+        upload_id = storage.save_upload(contents, filename)
+        
+        return {
+            "upload_id": upload_id,
+            "filename": filename,
+            "size_mb": round(file_size_mb, 2),
+            "source": "meeting_transcripts"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error selecting transcript: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error selecting transcript: {str(e)}")
 
 
 @router.post("/upload")
@@ -83,6 +167,8 @@ async def process_transcript(
         "progress": 0,
         "message": "Starting processing..."
     }
+    # Persist initial status to disk
+    storage.save_job_status(job_id, job_status[job_id])
     
     # Run processing in background
     asyncio.create_task(process_job(job_id, upload_id, model_strategy, preprocessing))
@@ -94,11 +180,19 @@ async def process_transcript(
     }
 
 
+def _update_job_status(job_id: str, updates: Dict[str, Any]):
+    """Update job status in memory and persist to disk."""
+    if job_id not in job_status:
+        job_status[job_id] = {}
+    job_status[job_id].update(updates)
+    # Persist to disk for recovery after server reload
+    storage.save_job_status(job_id, job_status[job_id])
+
+
 async def process_job(job_id: str, upload_id: str, model_strategy: str, preprocessing: str):
     """Background job processor."""
     try:
-        job_status[job_id]["progress"] = 10
-        job_status[job_id]["message"] = "Loading transcript..."
+        _update_job_status(job_id, {"progress": 10, "message": "Loading transcript..."})
         
         # Get file path
         file_path = storage.get_upload_path(upload_id)
@@ -106,8 +200,7 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
         # Parse transcript
         segments = TranscriptParser.parse(str(file_path))
         
-        job_status[job_id]["progress"] = 30
-        job_status[job_id]["message"] = "Preprocessing transcript..."
+        _update_job_status(job_id, {"progress": 30, "message": "Preprocessing transcript..."})
         
         # Preprocess
         advanced = preprocessing == "advanced"
@@ -116,11 +209,12 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
             segments,
             remove_fillers=advanced,
             normalize_speakers=advanced,
-            segment_topics=advanced
+            segment_topics=advanced,
+            remove_small_talk=advanced,
+            merge_short_turns=advanced
         )
         
-        job_status[job_id]["progress"] = 50
-        job_status[job_id]["message"] = "Initializing models..."
+        _update_job_status(job_id, {"progress": 50, "message": "Initializing models..."})
         
         # Get model adapter with specified strategy
         # Temporarily modify settings for this request
@@ -139,15 +233,49 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
         else:  # hybrid
             model_adapter = HybridAdapter(settings.huggingface_token)
         
-        job_status[job_id]["progress"] = 60
-        job_status[job_id]["message"] = "Extracting meeting intelligence..."
+        _update_job_status(job_id, {"progress": 60, "message": "Extracting meeting intelligence..."})
         
         # Extract information
         extractor = MeetingExtractor(model_adapter, cleaner)
         results = extractor.process(processed_segments)
         
-        job_status[job_id]["progress"] = 80
-        job_status[job_id]["message"] = "Saving results..."
+        # Check quality and potentially fallback to remote API if using local strategy
+        if model_strategy == "local" and results.get("quality_warning", False):
+            _update_job_status(job_id, {
+                "progress": 70,
+                "message": "Quality check: Low quality detected. Attempting fallback to remote API..."
+            })
+            
+            # Try fallback to remote API for summarization only
+            try:
+                from app.models.adapter import HuggingFaceInferenceAdapter
+                if settings.huggingface_token:
+                    remote_adapter = HuggingFaceInferenceAdapter(settings.huggingface_token)
+                    # Create a hybrid extractor with remote summarization
+                    hybrid_extractor = MeetingExtractor(remote_adapter, cleaner)
+                    # Re-extract summary with remote API
+                    new_summary = hybrid_extractor.extract_summary(processed_segments)
+                    if new_summary and len(new_summary) > len(results.get("summary", "")):
+                        # Update results with better summary and re-extract
+                        new_structured = hybrid_extractor.extract_structured_data(new_summary, processed_segments)
+                        results["summary"] = new_summary
+                        results["decisions"] = new_structured["decisions"]
+                        results["action_items"] = new_structured["action_items"]
+                        results["risks"] = new_structured["risks"]
+                        # Recalculate quality metrics
+                        results["quality_metrics"] = hybrid_extractor._calculate_quality_metrics(new_summary, new_structured)
+                        results["quality_warning"] = False
+                        results["used_fallback"] = True
+                        _update_job_status(job_id, {
+                            "progress": 75,
+                            "message": "Fallback to remote API improved results."
+                        })
+            except Exception as fallback_error:
+                print(f"Warning: Fallback to remote API failed: {fallback_error}")
+                results["fallback_error"] = str(fallback_error)
+                # Continue with original results
+        
+        _update_job_status(job_id, {"progress": 80, "message": "Saving results..."})
         
         # Add preprocessing metadata
         results["preprocessing_metadata"] = preprocess_metadata
@@ -156,32 +284,59 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
         try:
             storage.save_results(job_id, results)
             job_results[job_id] = results
-            job_status[job_id]["progress"] = 100
-            job_status[job_id]["status"] = "completed"
-            job_status[job_id]["message"] = "Processing complete!"
+            _update_job_status(job_id, {
+                "progress": 100,
+                "status": "completed",
+                "message": "Processing complete!"
+            })
         except Exception as save_error:
             # Even if save fails, try to keep results in memory
             job_results[job_id] = results
-            job_status[job_id]["progress"] = 95
-            job_status[job_id]["status"] = "completed"
-            job_status[job_id]["message"] = f"Processing complete (save warning: {str(save_error)})"
+            _update_job_status(job_id, {
+                "progress": 95,
+                "status": "completed",
+                "message": f"Processing complete (save warning: {str(save_error)})"
+            })
             print(f"Warning: Could not save results to disk for job {job_id}: {save_error}")
         
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
-        print(f"Error processing job {job_id}: {error_trace}")
+        print(f"\n{'='*60}")
+        print(f"ERROR processing job {job_id}:")
+        print(f"{'='*60}")
+        print(error_trace)
+        print(f"{'='*60}\n")
         
-        job_status[job_id]["status"] = "failed"
-        job_status[job_id]["message"] = f"Error: {str(e)}"
-        job_status[job_id]["error"] = str(e)
-        job_status[job_id]["progress"] = 0
+        _update_job_status(job_id, {
+            "status": "failed",
+            "message": f"Error: {str(e)}",
+            "error": str(e),
+            "traceback": error_trace,
+            "progress": 0
+        })
 
 
 @router.get("/status/{job_id}")
 async def get_job_status(job_id: str):
     """Get processing job status."""
     if job_id not in job_status:
+        # Try loading from disk (in case server was reloaded)
+        disk_status = storage.get_job_status(job_id)
+        if disk_status:
+            job_status[job_id] = disk_status
+            # Also try to load results if available
+            try:
+                results = storage.get_results(job_id)
+                job_results[job_id] = results
+            except FileNotFoundError:
+                pass
+            except (json.JSONDecodeError, ValueError) as e:
+                print(f"Warning: Could not load results due to JSON error: {e}")
+                # Continue without results - status is still valid
+            except Exception as e:
+                print(f"Warning: Could not load results: {e}")
+            return disk_status
         raise HTTPException(status_code=404, detail="Job not found")
     
     return job_status[job_id]

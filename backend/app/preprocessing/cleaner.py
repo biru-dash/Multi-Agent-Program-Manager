@@ -118,6 +118,71 @@ class TranscriptCleaner:
         cleaned_text = re.sub(r'\s+', ' ', cleaned_text)
         return cleaned_text.strip()
     
+    def remove_repetitions(self, text: str) -> str:
+        """Remove repeated words and phrases (e.g., 'yeah yeah', 'exactly exactly')."""
+        # Remove immediate repetitions
+        text = re.sub(r'\b(\w+)\s+\1\b', r'\1', text, flags=re.IGNORECASE)
+        # Remove triple repetitions
+        text = re.sub(r'\b(\w+)\s+\1\s+\1\b', r'\1', text, flags=re.IGNORECASE)
+        return text
+    
+    def remove_small_talk(self, segments: List[TranscriptSegment]) -> List[TranscriptSegment]:
+        """Remove small talk segments (greetings, acknowledgments, filler)."""
+        small_talk_patterns = [
+            r'^(hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)',
+            r'^(thanks|thank\s+you|appreciate\s+it)',
+            r'^(sure|okay|ok|yep|yeah|uh\s+huh)$',
+            r'^(got\s+it|understood|makes\s+sense)$',
+            r'^(sounds\s+good|sounds\s+great|perfect|great)$',
+        ]
+        
+        filtered = []
+        for seg in segments:
+            text_lower = seg.text.lower().strip()
+            # Skip if it's just small talk
+            is_small_talk = any(re.match(pattern, text_lower) for pattern in small_talk_patterns)
+            
+            # Also skip very short segments that are likely acknowledgments
+            if len(text_lower.split()) <= 3 and is_small_talk:
+                continue
+            
+            # Skip if it's just a single word acknowledgment
+            if len(text_lower.split()) == 1 and text_lower in ['yeah', 'yep', 'ok', 'okay', 'sure', 'right']:
+                continue
+            
+            filtered.append(seg)
+        
+        return filtered
+    
+    def merge_short_turns(self, segments: List[TranscriptSegment], min_duration_seconds: float = 3.0) -> List[TranscriptSegment]:
+        """Merge consecutive segments from same speaker if they're very short."""
+        if not segments:
+            return segments
+        
+        merged = []
+        current_segment = segments[0]
+        
+        for next_segment in segments[1:]:
+            # If same speaker and current segment is short, merge
+            if (current_segment.speaker == next_segment.speaker and 
+                current_segment.speaker is not None and
+                len(current_segment.text.split()) < 10):  # Short segment
+                
+                # Merge text
+                merged_text = f"{current_segment.text} {next_segment.text}".strip()
+                current_segment = TranscriptSegment(
+                    merged_text,
+                    speaker=current_segment.speaker,
+                    timestamp=current_segment.timestamp
+                )
+            else:
+                merged.append(current_segment)
+                current_segment = next_segment
+        
+        # Add last segment
+        merged.append(current_segment)
+        return merged
+    
     def normalize_speakers(self, segments: List[TranscriptSegment]) -> List[TranscriptSegment]:
         """Normalize speaker names to canonical forms."""
         # Build speaker mapping
@@ -224,11 +289,111 @@ class TranscriptCleaner:
         
         return result if result else [segments]
     
+    def semantic_chunk(self, text: str, max_tokens: int = 600, min_tokens: int = 200) -> List[str]:
+        """Intelligently chunk text using semantic similarity (~500-700 tokens per chunk)."""
+        if not self.embedding_model:
+            # Fallback to simple chunking
+            return self._simple_chunk(text, max_tokens)
+        
+        # Split into sentences (rough approximation)
+        sentences = re.split(r'[.!?]+\s+', text)
+        sentences = [s.strip() for s in sentences if s.strip()]
+        
+        if len(sentences) < 2:
+            return [text] if text.strip() else []
+        
+        # Generate embeddings for sentences
+        try:
+            sentence_embeddings = self.embedding_model.encode(sentences)
+        except Exception as e:
+            print(f"Warning: Could not generate embeddings for chunking: {e}")
+            return self._simple_chunk(text, max_tokens)
+        
+        # Build chunks using semantic similarity
+        chunks = []
+        current_chunk = []
+        current_tokens = 0
+        
+        for i, sentence in enumerate(sentences):
+            # Estimate tokens (rough: 1 token ≈ 4 chars)
+            sentence_tokens = len(sentence) // 4
+            
+            # Check if adding this sentence would exceed max_tokens
+            if current_tokens + sentence_tokens > max_tokens and current_chunk:
+                # Finalize current chunk
+                chunks.append(' '.join(current_chunk))
+                current_chunk = [sentence]
+                current_tokens = sentence_tokens
+            elif i == 0:
+                # First sentence
+                current_chunk.append(sentence)
+                current_tokens = sentence_tokens
+            else:
+                # Check semantic similarity with previous sentence
+                similarity = cosine_similarity(
+                    sentence_embeddings[i-1:i],
+                    sentence_embeddings[i:i+1]
+                )[0][0]
+                
+                # If similarity is high and we haven't exceeded min_tokens, keep in same chunk
+                if similarity > 0.7 and current_tokens >= min_tokens:
+                    # Check if we can add without exceeding max
+                    if current_tokens + sentence_tokens <= max_tokens:
+                        current_chunk.append(sentence)
+                        current_tokens += sentence_tokens
+                    else:
+                        # Start new chunk
+                        chunks.append(' '.join(current_chunk))
+                        current_chunk = [sentence]
+                        current_tokens = sentence_tokens
+                else:
+                    # Low similarity or chunk too small - decide based on size
+                    if current_tokens < min_tokens:
+                        # Keep adding until we reach min_tokens
+                        current_chunk.append(sentence)
+                        current_tokens += sentence_tokens
+                    else:
+                        # Start new chunk
+                        chunks.append(' '.join(current_chunk))
+                        current_chunk = [sentence]
+                        current_tokens = sentence_tokens
+        
+        # Add final chunk
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+        
+        return chunks if chunks else [text]
+    
+    def _simple_chunk(self, text: str, max_tokens: int) -> List[str]:
+        """Simple word-based chunking fallback."""
+        max_words = int(max_tokens * 0.75)
+        words = text.split()
+        chunks = []
+        current_chunk = []
+        current_length = 0
+        
+        for word in words:
+            if current_length + 1 > max_words and current_chunk:
+                chunks.append(' '.join(current_chunk))
+                current_chunk = [word]
+                current_length = 1
+            else:
+                current_chunk.append(word)
+                current_length += 1
+        
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+        
+        return chunks if chunks else [text]
+    
     def clean_segments(self, segments: List[TranscriptSegment]) -> List[TranscriptSegment]:
         """Apply all cleaning steps to segments."""
         cleaned = []
         for segment in segments:
+            # Remove fillers
             cleaned_text = self.remove_fillers(segment.text)
+            # Remove repetitions
+            cleaned_text = self.remove_repetitions(cleaned_text)
             if cleaned_text:  # Only add non-empty segments
                 cleaned.append(
                     TranscriptSegment(cleaned_text, speaker=segment.speaker, timestamp=segment.timestamp)
@@ -261,7 +426,9 @@ class TranscriptCleaner:
     def process(self, segments: List[TranscriptSegment], 
                 remove_fillers: bool = True,
                 normalize_speakers: bool = True,
-                segment_topics: bool = False) -> Tuple[List[TranscriptSegment], Dict[str, Any]]:
+                segment_topics: bool = False,
+                remove_small_talk: bool = True,
+                merge_short_turns: bool = True) -> Tuple[List[TranscriptSegment], Dict[str, Any]]:
         """Full preprocessing pipeline."""
         processed = segments.copy()
         metadata = {
@@ -269,15 +436,28 @@ class TranscriptCleaner:
             "speakers": []
         }
         
+        # Step 1: Remove small talk (greetings, acknowledgments)
+        if remove_small_talk:
+            processed = self.remove_small_talk(processed)
+            metadata["small_talk_removed"] = True
+        
+        # Step 2: Merge short consecutive turns from same speaker
+        if merge_short_turns:
+            processed = self.merge_short_turns(processed)
+            metadata["short_turns_merged"] = True
+        
+        # Step 3: Remove fillers and repetitions
         if remove_fillers:
             processed = self.clean_segments(processed)
             metadata["filler_removed"] = True
         
+        # Step 4: Normalize speakers
         if normalize_speakers:
             processed = self.normalize_speakers(processed)
             metadata["speakers"] = list(set([seg.speaker for seg in processed if seg.speaker]))
             metadata["speaker_normalized"] = True
         
+        # Step 5: Segment by topics (optional)
         if segment_topics and self.embedding_model:
             topic_segments = self.segment_by_topics(processed)
             metadata["topic_segments"] = len(topic_segments)

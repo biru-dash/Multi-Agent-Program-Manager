@@ -34,19 +34,100 @@ class TranscriptParser:
         segments = []
         lines = content.split('\n')
         
-        for line in lines:
+        current_speaker = None
+        current_timestamp = None
+        current_text = []
+        
+        for i, line in enumerate(lines):
             line = line.strip()
             if not line:
+                # Empty line - save current segment if we have text
+                if current_text:
+                    text = ' '.join(current_text).strip()
+                    if text:
+                        segments.append(TranscriptSegment(
+                            text, 
+                            speaker=current_speaker, 
+                            timestamp=current_timestamp
+                        ))
+                    current_text = []
+                    current_speaker = None
+                    current_timestamp = None
                 continue
             
-            # Try to detect speaker pattern: "Speaker: text" or "[Speaker] text"
+            # Pattern 1: "Last, First   timestamp" format (e.g., "Chen, David   0:03")
+            # Also handles "Last, First (Role)   timestamp"
+            speaker_timestamp_match = re.match(r'^([A-Z][a-z]+(?:\s*,\s*[A-Z][a-z]+)+(?:\s+\([^)]+\))?)\s+(\d{1,2}:\d{2}(?::\d{2})?)$', line)
+            if not speaker_timestamp_match:
+                # Try pattern without comma: "First Last   timestamp"
+                speaker_timestamp_match = re.match(r'^([A-Z][a-z]+\s+[A-Z][a-z]+(?:\s+\([^)]+\))?)\s+(\d{1,2}:\d{2}(?::\d{2})?)$', line)
+            if speaker_timestamp_match:
+                # Save previous segment if exists
+                if current_text:
+                    text = ' '.join(current_text).strip()
+                    if text:
+                        segments.append(TranscriptSegment(
+                            text, 
+                            speaker=current_speaker, 
+                            timestamp=current_timestamp
+                        ))
+                    current_text = []
+                
+                # Extract speaker name - handle "Last, First" or "Last, First (Role)"
+                speaker_part = speaker_timestamp_match.group(1).strip()
+                # Remove role in parentheses if present
+                speaker_part = re.sub(r'\s*\([^)]+\)$', '', speaker_part)
+                # Convert "Last, First" to "First Last" or keep as is
+                if ',' in speaker_part:
+                    parts = [p.strip() for p in speaker_part.split(',')]
+                    if len(parts) == 2:
+                        current_speaker = f"{parts[1]} {parts[0]}".strip()
+                    else:
+                        current_speaker = speaker_part
+                else:
+                    current_speaker = speaker_part
+                
+                current_timestamp = speaker_timestamp_match.group(2).strip()
+                continue
+            
+            # Pattern 2: "Speaker: text" or "[Speaker] text"
             speaker_match = re.match(r'^(\w+(?:\s+\w+)?)[:\[]\s*(.+)$', line)
             if speaker_match:
-                speaker = speaker_match.group(1).strip()
+                # Save previous segment
+                if current_text:
+                    text = ' '.join(current_text).strip()
+                    if text:
+                        segments.append(TranscriptSegment(
+                            text, 
+                            speaker=current_speaker, 
+                            timestamp=current_timestamp
+                        ))
+                    current_text = []
+                
+                current_speaker = speaker_match.group(1).strip()
                 text = speaker_match.group(2).strip(']')
-                segments.append(TranscriptSegment(text, speaker=speaker))
-            else:
-                segments.append(TranscriptSegment(line))
+                current_text.append(text)
+                continue
+            
+            # Pattern 3: Lines that look like timestamps (e.g., "0:03", "1:15")
+            timestamp_only_match = re.match(r'^(\d{1,2}:\d{2}(?::\d{2})?)$', line)
+            if timestamp_only_match and not current_text:
+                current_timestamp = timestamp_only_match.group(1)
+                continue
+            
+            # Regular text line - append to current segment
+            if line:
+                current_text.append(line)
+        
+        # Save last segment
+        if current_text:
+            text = ' '.join(current_text).strip()
+            if text:
+                segments.append(TranscriptSegment(
+                    text, 
+                    speaker=current_speaker, 
+                    timestamp=current_timestamp
+                ))
         
         return segments
     

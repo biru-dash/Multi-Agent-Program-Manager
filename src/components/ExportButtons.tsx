@@ -113,9 +113,17 @@ ${mia.action_items.length > 0
 ## Identified Risks
 
 ${mia.risks.length > 0
-  ? mia.risks.map((r, i) => 
-      `${i + 1}. ${r.risk}${r.mentioned_by ? ` (mentioned by: ${r.mentioned_by})` : ''} - Confidence: ${(r.confidence * 100).toFixed(0)}%`
-    ).join('\n')
+  ? mia.risks.map((r, i) => {
+      let riskText = `${i + 1}. ${r.risk}`;
+      if (r.category) riskText += `\n   - Category: ${r.category}`;
+      if (r.priority) riskText += `\n   - Priority: ${r.priority}`;
+      if (r.mentioned_by) riskText += `\n   - Mentioned by: ${r.mentioned_by}`;
+      if (r.owner) riskText += `\n   - Owner: ${r.owner}`;
+      if (r.impact) riskText += `\n   - Impact: ${r.impact}`;
+      if (r.mitigation) riskText += `\n   - Mitigation: ${r.mitigation}`;
+      riskText += `\n   - Confidence: ${(r.confidence * 100).toFixed(0)}%`;
+      return riskText;
+    }).join('\n\n')
   : 'No risks identified.'
 }
 

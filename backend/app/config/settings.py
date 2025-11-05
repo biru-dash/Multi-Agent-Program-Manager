@@ -58,7 +58,8 @@ class Settings(BaseSettings):
     huggingface_token: str = Field(..., env="HUGGINGFACE_TOKEN")
     
     # Model Strategy: local, remote, or hybrid
-    model_strategy: Literal["local", "remote", "hybrid"] = "hybrid"
+    # Set to "local" for testing with local models only
+    model_strategy: Literal["local", "remote", "hybrid"] = "local"
     
     # Directory Configuration
     upload_dir: str = "./uploads"
@@ -67,9 +68,12 @@ class Settings(BaseSettings):
     # File Upload Limits
     max_file_size_mb: int = 50
     
-    # Model Names
-    summarization_model: str = "knkarthick/bart-large-xsum-samsum"
+    # Model Names - Optimized for local inference
+    # Summarization: philschmid/bart-large-cnn-samsum - Tuned for conversational text (SAMSum), 1024-token limit
+    summarization_model: str = "philschmid/bart-large-cnn-samsum"
+    # NER: dslim/bert-base-NER - Compact, accurate, CoNLL-03 trained (PER, ORG, LOC, MISC)
     ner_model: str = "dslim/bert-base-NER"
+    # Embeddings: sentence-transformers/all-MiniLM-L6-v2 - Fast CPU inference, great trade-off
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     
     model_config = SettingsConfigDict(

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { FileUpload } from '@/components/FileUpload';
+import { TranscriptSelector } from '@/components/TranscriptSelector';
 import { ConfigPanel } from '@/components/ConfigPanel';
 import { WorkflowCanvas } from '@/components/WorkflowCanvas';
 import { MIAOutput } from '@/components/MIAOutput';
@@ -7,6 +8,7 @@ import { ExportButtons } from '@/components/ExportButtons';
 import { LogPanel, type LogEntry } from '@/components/LogPanel';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Play, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { AgentConfig, AgentState } from '@/types/agent';
@@ -14,7 +16,7 @@ import { miaService, type MIAResults } from '@/services/miaService';
 
 const Index = () => {
   const [config, setConfig] = useState<AgentConfig>({
-    modelStrategy: 'hybrid',
+    modelStrategy: 'local', // Changed to 'local' for testing local models
     preprocessing: 'advanced',
     confidenceThreshold: 75,
     outputFormat: 'json' as 'json' | 'markdown',
@@ -25,6 +27,7 @@ const Index = () => {
     { id: 'mia', name: 'Meeting Intelligence Agent', status: 'idle', progress: 0 },
   ]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [selectedTranscriptFilename, setSelectedTranscriptFilename] = useState<string | null>(null);
   const [miaOutput, setMiaOutput] = useState<MIAResults | null>(null);
   const [uploadId, setUploadId] = useState<string | null>(null);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
@@ -47,35 +50,43 @@ const Index = () => {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const health = await miaService.checkHealth();
-        setBackendStatus({
-          reachable: health.reachable,
-          status: health.status,
-          error: health.error,
-        });
-        
-        if (health.reachable) {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/health`);
+        if (response.ok) {
+          const data = await response.json();
+          setBackendStatus({
+            reachable: true,
+            status: data.status,
+          });
           addLog('success', `Backend is reachable at ${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}`);
         } else {
-          addLog('error', `Backend is not reachable: ${health.error}`);
-          toast.error('Cannot connect to backend server. Please ensure it is running.');
+          throw new Error('Backend not responding');
         }
       } catch (error) {
         setBackendStatus({
           reachable: false,
           error: error instanceof Error ? error.message : 'Unknown error',
         });
+        addLog('error', `Backend is not reachable: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        toast.error('Cannot connect to backend server. Please ensure it is running.');
       }
     };
 
     checkBackend();
   }, []);
 
+  const handleTranscriptSelected = async (filename: string, uploadId: string) => {
+    setSelectedTranscriptFilename(filename);
+    setUploadId(uploadId);
+    setUploadedFiles([]); // Clear uploaded files when selecting from folder
+    addLog('success', `Transcript selected: ${filename}`);
+  };
+
   const handleFilesSelected = async (files: File[]) => {
     if (files.length === 0) return;
     
     const file = files[0];
     addLog('info', `File selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+    setSelectedTranscriptFilename(null); // Clear folder selection when uploading
     
     // Upload the first file to backend
     try {
@@ -109,8 +120,8 @@ const Index = () => {
 
   const handleProcess = async () => {
     if (!uploadId) {
-      addLog('warning', 'Cannot process: No file uploaded');
-      toast.error('Please upload transcript files first');
+      addLog('warning', 'Cannot process: No file selected');
+      toast.error('Please select or upload a transcript file first');
       return;
     }
 
@@ -118,7 +129,7 @@ const Index = () => {
     setMiaOutput(null);
 
     addLog('info', 'Starting transcript processing...');
-    addLog('info', `Model strategy: ${config.modelStrategy || 'hybrid'}`);
+    addLog('info', `Model strategy: ${config.modelStrategy || 'local'}`);
     addLog('info', `Preprocessing level: ${config.preprocessing || 'advanced'}`);
 
     // MIA Processing
@@ -133,7 +144,7 @@ const Index = () => {
       addLog('info', 'Sending processing request to backend...');
       const processResponse = await miaService.processTranscript(
         uploadId!,
-        config.modelStrategy || 'hybrid',
+        config.modelStrategy || 'local',
         config.preprocessing || 'advanced'
       );
       
@@ -173,6 +184,17 @@ const Index = () => {
         }
       );
 
+      // Check final status before getting results
+      const finalStatus = await miaService.getJobStatus(processResponse.job_id);
+      
+      if (finalStatus.status === 'failed') {
+        throw new Error(finalStatus.error || finalStatus.message || 'Processing failed');
+      }
+      
+      if (finalStatus.status !== 'completed') {
+        throw new Error(`Unexpected status: ${finalStatus.status}`);
+      }
+
       addLog('success', 'Processing completed successfully');
       addLog('info', 'Fetching results...');
 
@@ -209,6 +231,7 @@ const Index = () => {
   const handleReset = () => {
     setAgents([{ id: 'mia', name: 'Meeting Intelligence Agent', status: 'idle', progress: 0 }]);
     setUploadedFiles([]);
+    setSelectedTranscriptFilename(null);
     setUploadId(null);
     setCurrentJobId(null);
     setMiaOutput(null);
@@ -245,7 +268,7 @@ const Index = () => {
               />
               <Button
                 onClick={handleProcess}
-                disabled={isProcessing || uploadedFiles.length === 0}
+                disabled={isProcessing || !uploadId}
                 className="gap-2"
               >
                 <Play className="w-4 h-4" />
@@ -267,11 +290,29 @@ const Index = () => {
           <div className="col-span-3 space-y-6">
             <ConfigPanel config={config} onConfigChange={setConfig} />
             <Card className="p-4 border-border bg-card/50">
-              <h3 className="font-semibold text-foreground mb-3">Upload Transcript</h3>
-              <FileUpload onFilesSelected={handleFilesSelected} />
-              {uploadedFiles.length > 0 && (
-                <div className="mt-3 text-xs text-muted-foreground">
-                  {uploadedFiles.length} file(s) ready
+              <Tabs defaultValue="folder" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="folder">From Folder</TabsTrigger>
+                  <TabsTrigger value="upload">Upload File</TabsTrigger>
+                </TabsList>
+                <TabsContent value="folder" className="space-y-0">
+                  <TranscriptSelector
+                    onTranscriptSelected={handleTranscriptSelected}
+                    selectedFilename={selectedTranscriptFilename}
+                  />
+                </TabsContent>
+                <TabsContent value="upload" className="space-y-0">
+                  <FileUpload onFilesSelected={handleFilesSelected} />
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-3 text-xs text-muted-foreground">
+                      {uploadedFiles.length} file(s) ready
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+              {uploadId && (
+                <div className="mt-3 p-2 bg-primary/10 rounded text-xs text-primary">
+                  ✓ File ready for processing
                 </div>
               )}
             </Card>
