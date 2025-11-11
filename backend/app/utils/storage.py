@@ -5,6 +5,9 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
 import uuid
+from numbers import Number
+
+import numpy as np
 
 
 class StorageManager:
@@ -52,6 +55,15 @@ class StorageManager:
             return [self._sanitize_for_json(item) for item in obj]
         elif isinstance(obj, (str, int, float, bool, type(None))):
             return obj
+        elif isinstance(obj, (set, tuple)):
+            return [self._sanitize_for_json(item) for item in obj]
+        elif isinstance(obj, np.ndarray):
+            return self._sanitize_for_json(obj.tolist())
+        elif isinstance(obj, np.generic):
+            return obj.item()
+        elif isinstance(obj, Number):
+            # Handles other numeric types like Decimal
+            return float(obj)
         elif hasattr(obj, '__dict__'):
             # Convert objects to dict
             return self._sanitize_for_json(obj.__dict__)
@@ -92,17 +104,17 @@ class StorageManager:
             f.write(self._generate_markdown_report(results))
         
         # Save individual components
-        if "summary" in results:
+        if "summary" in sanitized_results:
             summary_path = job_dir / "summary.json"
             with open(summary_path, 'w', encoding='utf-8') as f:
-                json.dump({"summary": results["summary"]}, f, indent=2)
+                json.dump({"summary": sanitized_results["summary"]}, f, indent=2)
         
         extracted_path = job_dir / "extracted_items.json"
         with open(extracted_path, 'w', encoding='utf-8') as f:
             json.dump({
-                "decisions": results.get("decisions", []),
-                "action_items": results.get("action_items", []),
-                "risks": results.get("risks", [])
+                "decisions": sanitized_results.get("decisions", []),
+                "action_items": sanitized_results.get("action_items", []),
+                "risks": sanitized_results.get("risks", [])
             }, f, indent=2)
         
         return job_dir

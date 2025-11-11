@@ -154,7 +154,7 @@ async def upload_transcript(file: UploadFile = File(...)):
 @router.post("/process/{upload_id}")
 async def process_transcript(
     upload_id: str,
-    model_strategy: Optional[str] = Query("hybrid", enum=["local", "remote", "hybrid"]),
+    model_strategy: Optional[str] = Query("hybrid", enum=["local", "remote", "hybrid", "ollama"]),
     preprocessing: Optional[str] = Query("advanced", enum=["basic", "advanced"])
 ):
     """Process uploaded transcript and extract meeting intelligence."""
@@ -190,17 +190,40 @@ def _update_job_status(job_id: str, updates: Dict[str, Any]):
 
 
 async def process_job(job_id: str, upload_id: str, model_strategy: str, preprocessing: str):
-    """Background job processor."""
+    """Background job processor with enhanced progress tracking."""
+    import time
+    start_time = time.time()
+    
+    # Estimate total time based on strategy
+    estimated_times = {
+        "local": 45,      # 45 seconds
+        "remote": 30,     # 30 seconds  
+        "hybrid": 35,     # 35 seconds
+        "ollama": 120     # 2 minutes for Ollama/Llama 3
+    }
+    estimated_total = estimated_times.get(model_strategy, 60)
+    
     try:
-        _update_job_status(job_id, {"progress": 10, "message": "Loading transcript..."})
+        _update_job_status(job_id, {
+            "progress": 5, 
+            "message": f"Starting {model_strategy} processing...", 
+            "estimated_total": estimated_total,
+            "elapsed": 0
+        })
         
         # Get file path
         file_path = storage.get_upload_path(upload_id)
         
         # Parse transcript
         segments = TranscriptParser.parse(str(file_path))
+        elapsed = int(time.time() - start_time)
         
-        _update_job_status(job_id, {"progress": 30, "message": "Preprocessing transcript..."})
+        _update_job_status(job_id, {
+            "progress": 15, 
+            "message": f"Loaded transcript ({len(segments)} segments)",
+            "elapsed": elapsed,
+            "eta": max(0, estimated_total - elapsed)
+        })
         
         # Preprocess
         advanced = preprocessing == "advanced"
@@ -214,7 +237,29 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
             merge_short_turns=advanced
         )
         
-        _update_job_status(job_id, {"progress": 50, "message": "Initializing models..."})
+        elapsed = int(time.time() - start_time)
+        _update_job_status(job_id, {
+            "progress": 30, 
+            "message": f"Preprocessed to {len(processed_segments)} segments",
+            "elapsed": elapsed,
+            "eta": max(0, estimated_total - elapsed)
+        })
+        
+        # Model-specific progress messages
+        if model_strategy == "ollama":
+            _update_job_status(job_id, {
+                "progress": 40, 
+                "message": "Connecting to Ollama/Llama 3...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
+        else:
+            _update_job_status(job_id, {
+                "progress": 40, 
+                "message": "Initializing models...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
         
         # Get model adapter with specified strategy
         # Temporarily modify settings for this request
@@ -224,20 +269,58 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
         temp_settings.model_strategy = model_strategy
         
         # Import and use get_model_adapter with override
-        from app.models.adapter import LocalTransformerAdapter, HuggingFaceInferenceAdapter, HybridAdapter
+        from app.models.adapter import LocalTransformerAdapter, HuggingFaceInferenceAdapter, HybridAdapter, get_model_adapter
         
         if model_strategy == "local":
             model_adapter = LocalTransformerAdapter()
         elif model_strategy == "remote":
             model_adapter = HuggingFaceInferenceAdapter(settings.huggingface_token)
+        elif model_strategy == "ollama":
+            model_adapter = get_model_adapter("ollama")
         else:  # hybrid
             model_adapter = HybridAdapter(settings.huggingface_token)
         
-        _update_job_status(job_id, {"progress": 60, "message": "Extracting meeting intelligence..."})
+        elapsed = int(time.time() - start_time)
+        
+        # Model-specific extraction messages
+        if model_strategy == "ollama":
+            _update_job_status(job_id, {
+                "progress": 50, 
+                "message": "🤖 Llama 3 analyzing transcript (1-2 min)...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
+        else:
+            _update_job_status(job_id, {
+                "progress": 50, 
+                "message": "Extracting meeting intelligence...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
         
         # Extract information
         extractor = MeetingExtractor(model_adapter, cleaner)
+        
+        # Update progress during extraction
+        elapsed = int(time.time() - start_time)
+        if model_strategy == "ollama":
+            _update_job_status(job_id, {
+                "progress": 70, 
+                "message": "🧠 Extracting decisions with Llama 3...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
+        
         results = extractor.process(processed_segments)
+        
+        elapsed = int(time.time() - start_time)
+        if model_strategy == "ollama":
+            _update_job_status(job_id, {
+                "progress": 85, 
+                "message": "🎯 Finalizing structured extraction...", 
+                "elapsed": elapsed,
+                "eta": max(0, estimated_total - elapsed)
+            })
         
         # Check quality and potentially fallback to remote API if using local strategy
         if model_strategy == "local" and results.get("quality_warning", False):
@@ -275,23 +358,40 @@ async def process_job(job_id: str, upload_id: str, model_strategy: str, preproce
                 results["fallback_error"] = str(fallback_error)
                 # Continue with original results
         
-        _update_job_status(job_id, {"progress": 80, "message": "Saving results..."})
+        elapsed = int(time.time() - start_time)
+        _update_job_status(job_id, {
+            "progress": 90, 
+            "message": "Saving results...", 
+            "elapsed": elapsed,
+            "eta": max(0, estimated_total - elapsed)
+        })
         
         # Add preprocessing metadata
         results["preprocessing_metadata"] = preprocess_metadata
+        sanitized_results = storage._sanitize_for_json(results)
         
         # Save results
         try:
             storage.save_results(job_id, results)
-            job_results[job_id] = results
+            job_results[job_id] = sanitized_results
+            
+            # Final completion with actual time
+            final_elapsed = int(time.time() - start_time)
+            decisions_count = len(results.get("decisions", []))
+            actions_count = len(results.get("action_items", []))
+            risks_count = len(results.get("risks", []))
+            
             _update_job_status(job_id, {
                 "progress": 100,
                 "status": "completed",
-                "message": "Processing complete!"
+                "message": f"✅ Complete! Found {decisions_count} decisions, {actions_count} actions, {risks_count} risks",
+                "elapsed": final_elapsed,
+                "eta": 0,
+                "actual_time": final_elapsed
             })
         except Exception as save_error:
             # Even if save fails, try to keep results in memory
-            job_results[job_id] = results
+            job_results[job_id] = sanitized_results
             _update_job_status(job_id, {
                 "progress": 95,
                 "status": "completed",
