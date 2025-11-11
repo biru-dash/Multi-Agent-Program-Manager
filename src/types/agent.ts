@@ -31,11 +31,18 @@ export interface REAInput {
 
 export interface AgentConfig {
   llmModel?: string;
-  modelStrategy?: 'local' | 'remote' | 'hybrid';
+  modelStrategy?: 'local' | 'remote' | 'hybrid' | 'ollama';
   preprocessing?: 'basic' | 'advanced';
   confidenceThreshold: number;
   outputFormat: 'json' | 'markdown';
   workflowMode: WorkflowMode;
+  // Advanced Ollama parameters
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  contextChunking?: boolean;
+  chunkSize?: number;
+  extractionMode?: 'comprehensive' | 'focused' | 'creative';
 }
 
 export interface AgentState {
@@ -44,4 +51,8 @@ export interface AgentState {
   status: AgentStatus;
   progress: number;
   error?: string;
+  message?: string;
+  elapsed?: number;
+  eta?: number;
+  estimatedTotal?: number;
 }

@@ -1,0 +1,1488 @@
+{
+  "summary": "The Q4 Product Launch Planning Meeting is taking place today at 2:30 PM. They are planning the Q4 product launch of their new cloud analytics platform 8 weeks before the launch date. The biggest risk is the Salesforce integration delay, so the board decides to push the launch by 2 weeks to October 29th. Alex, James, Emily, Priya, and Marcus need to update the project plan with the new launch date and revised feature set, coordinate with engineering on the performance testing sprint, update go-to-market plan with revised timeline and gating criteria, and update marketing materials.",
+  "decisions": [
+    {
+      "text": "Perfect. Let me start by setting the context. As you all know, we're launching our new cloud analytics platform in Q4, and we're about 8 weeks out from the target launch date. Today we need to make some critical decisions, identify risks, and assign action items to keep us on track.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Sounds good. I have a question though - has marketing finalized the messaging yet? Because we're running out of time to get collateral ready.",
+      "speaker": "Emily Wilson",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Great question, Emily. That's decision point number one we need to make today. let's start with the timeline review.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "push the launch - the board has already committed to",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's make a decision here",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "That's me. I've been back and forth with legal for three weeks now. The issue is around data retention policies. They want us to specify exactly how long we keep customer data, but our product team hasn't finalized the retention strategy yet.",
+      "speaker": "Emily Wilson",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "That's a circular dependency. Let me make a call here - Emily, can you schedule a three-way meeting with legal and our product team to resolve this? I think we need to make a decision on retention policy now, even if it's not perfect.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's move to feature set decisions",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's move to feature set decisions",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Wait, David, I thought we agreed webhooks were must-have?",
+      "speaker": "Priya Patel",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Agreed.",
+      "speaker": "Alex Thompson",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Agreed.",
+      "speaker": "Alex Thompson",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's move to go-to-market strategy",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Now, pricing. Have we finalized pricing?",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Now, pricing. Have we finalized pricing?",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Sarah, can you get the competitive analysis finalized by end of week? We need pricing locked in for marketing collateral.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Let's make key person dependency number 2",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "For security audit: we're pursuing both internal escalation and external options. We'll have a decision by end of week.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "For security audit: we're pursuing both internal escalation and external options. We'll have a decision by end of week.",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's move to action items",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's move to action items",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's make a decision",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's make a decision",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Agreed. Let's do bi-weekly updates for the next month, then weekly as we get closer. Emily, can you take that on?",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "let's make that stress test happens",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    },
+    {
+      "text": "Let's make this launch a success",
+      "speaker": "David Chen",
+      "timestamp": null,
+      "confidence": 0.85
+    }
+  ],
+  "action_items": [
+    {
+      "action": "Strategic Review-20250315_143000-Meeting Recording March 15, 2025, 2:30PM 45m 18s",
+      "owner": "Meeting",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "mention that we got some concerning feedback from the beta testers last week",
+      "owner": "Marcus Johnson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "read, but the key issue is performance degradation when handling large datasets",
+      "owner": "Pre",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "to-market strategy",
+      "owner": "Go",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "has marketing finalized the messaging yet",
+      "owner": "Though",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "off from legal on the terms of service",
+      "owner": "Sign",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "week delay minimum",
+      "owner": "Two",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "expedited support",
+      "owner": "Us",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send an email to our account manager, Mike Hendricks, and CC the team",
+      "owner": "Sarah Martinez",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "whose responsibility is that",
+      "owner": "Audit",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "the board has already committed to Q4",
+      "owner": "Launch",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "for external security audits",
+      "owner": "Approval",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "escalate to the internal security team",
+      "owner": "Marcus",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "partial audit or at least get on their priority list",
+      "owner": "A",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "help coordinate with finance on this",
+      "owner": "Sarah",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send you the contact - and second, get formal quotes from all three external auditors",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "quotes from all three external auditors",
+      "owner": "Formal",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "I'll send you the contact - and second, get formal quotes from all three external auditors",
+      "owner": "Lead",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "set up a meeting with finance for tomorrow afternoon to discuss the budget implications",
+      "owner": "Sarah Martinez",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "off on terms of service",
+      "owner": "Sign",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "schedule a three-way meeting with legal and our product team to resolve this",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "Emily, can you schedule a three-way meeting with legal and our product team to resolve this",
+      "owner": "Here",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "aim for this week if possible",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "cut the advanced reporting dashboard, the mobile app integration, the real-time collaboration features, the custom branding option, and the API webhook functionality",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "time collaboration features, the custom branding option, and the API webhook functionality",
+      "owner": "Real",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "cut the advanced reporting instead - we can use the basic reporting for launch and add advanced features later",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we can use the basic reporting for launch and add advanced features later",
+      "owner": "Instead",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "have features for launch",
+      "owner": "Must",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "based analytics, real-time data processing, and API access",
+      "owner": "Cloud",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "negotiable",
+      "owner": "Non",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "haves: core analytics engine, data import/export, basic reporting, user authentication, API access including webhooks, dashboard customization, data visualization, and basic collaboration",
+      "owner": "Must",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "time collaboration",
+      "owner": "Real",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "time collaboration versus custom branding",
+      "owner": "Real",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "time collaboration for me",
+      "owner": "Real",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "make the call - we'll go with mobile app integration and real-time collaboration",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we'll go with mobile app integration and real-time collaboration",
+      "owner": "Call",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "users know when their reports are ready",
+      "owner": "How",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "walk us through the current plan",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "phase launch",
+      "owner": "Three",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "that's about 50 companies",
+      "owner": "Customers",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "about 500 companies",
+      "owner": "Base",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we haven't discussed what happens if we find critical bugs during phase one",
+      "owner": "Something",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "define what constitutes a critical bug that would pause the rollout",
+      "owner": "Marcus",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "update the go-to-market plan with the revised timeline and include the gating criteria",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "to-market plan with the revised timeline and include the gating criteria",
+      "owner": "Go",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update the plan and share it by end of day",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "Starter at $99/month, Professional at $299/month, and Enterprise at custom pricing",
+      "owner": "Tiers",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "get the competitive analysis finalized by end of week",
+      "owner": "Sarah",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "competitive analysis finalized by end of week",
+      "owner": "The",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "have it by Thursday",
+      "owner": "Sarah Martinez",
+      "due_date": "Thursday",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "prioritize it",
+      "owner": "Sarah Martinez",
+      "due_date": "Thursday",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "have a bad experience and we'll get negative reviews",
+      "owner": "Users",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "baked feature is worse than no feature",
+      "owner": "Half",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "these take time",
+      "owner": "Studies",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "flood of customers during launch, will our support team be able to handle it",
+      "owner": "A",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "- we're already over budget on engineering, and we might need to cut more if external security audit costs too much",
+      "owner": "Constraints",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "or leave, we're in trouble",
+      "owner": "Sick",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "we're already over budget on engineering, and we might need to cut more if external security audit costs too much",
+      "owner": "Constraints",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "if any of our critical engineers get sick or leave, we're in trouble",
+      "owner": "Risk",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "our lead engineer, James, is taking paternity leave in 4 weeks",
+      "owner": "Me",
+      "due_date": "4 weeks",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "schedule knowledge transfer sessions with James this week",
+      "owner": "Marcus",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "coordinate with James",
+      "owner": "Marcus Johnson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "Salesforce integration, performance issues, security audit",
+      "owner": "Risks",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "support capacity, key person dependency",
+      "owner": "Risks",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "feature completeness, budget constraints, timeline pressure",
+      "owner": "Risks",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "coordinate with legal on the compliance audit timeline",
+      "owner": "Sarah",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "reach out to legal today",
+      "owner": "Sarah Martinez",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "training the junior engineer",
+      "owner": "Cross",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "compliance in time",
+      "owner": "Full",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we need to decide on the launch date",
+      "owner": "Thing",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "push it back by 2 weeks to give us more buffer",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update all marketing materials and communications",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update everything today",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "go around the room and assign owners",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "start: I need to contact Salesforce account manager by end of day tomorrow for expedited support",
+      "owner": "Sarah Martinez",
+      "due_date": "end of day tomorrow",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "from external auditors",
+      "owner": "Quotes",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "to-market plan with revised timeline and gating criteria",
+      "owner": "Go",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "way meeting with legal and product on data retention",
+      "owner": "Three",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send Marcus the contact for the internal security team lead, I'll communicate the new launch date to the board, and I'll schedule a follow-up meeting for next week to review progress",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "up meeting for next week to review progress",
+      "owner": "Follow",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "probably set up a daily standup or at least a weekly checkpoint to track these action items",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we should probably set up a daily standup or at least a weekly checkpoint to track these action items",
+      "owner": "Thing",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send calendar invites",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "increase frequency given we're getting close to launch",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "take that on",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "weekly updates for the next month, then weekly as we get closer",
+      "owner": "Bi",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send updates every Tuesday and Friday",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "have features working, performance within acceptable limits, and security audit passed",
+      "owner": "Must",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "also add: regulatory compliance achieved, on-time launch, and within budget",
+      "owner": "We",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "time launch, and within budget",
+      "owner": "On",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "escalate immediately to me, and I'll escalate to the board if needed",
+      "owner": "They",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "escalate to the board if needed",
+      "owner": "David Chen",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "of more than 10%, or any issue that could impact customer data or privacy",
+      "owner": "Overrun",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update the risk register with all the risks we discussed, the mitigation plans, and the escalation criteria",
+      "owner": "Sarah",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "do that and share it by end of day",
+      "owner": "Sarah Martinez",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "come through once Sarah gets us expedited support",
+      "owner": "That",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "follow up with design team by Friday if assets aren't ready",
+      "owner": "Priya",
+      "due_date": "Friday",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "escalate the testimonial issue",
+      "owner": "Emily",
+      "due_date": "Friday",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "try offering early access to new features as an incentive",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "custom branding, advanced reporting, scheduled reports, and additional export formats",
+      "owner": "Features",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "schedule a retrospective for 2 weeks after launch",
+      "owner": "Emily Wilson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "we haven't talked about training",
+      "owner": "Concern",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "need help from the product team to make they're accurate",
+      "owner": "Marcus Johnson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "surge of users on launch day, will our infrastructure handle it",
+      "owner": "A",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "coordinate with operations on that",
+      "owner": "Marcus",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "set it up for next Tuesday",
+      "owner": "Marcus Johnson",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "launch based on customer feedback",
+      "owner": "Post",
+      "due_date": null,
+      "priority": "high",
+      "confidence": 0.85
+    },
+    {
+      "action": "polished features than many half-baked ones",
+      "owner": "Well",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "contact Salesforce account manager by EOD tomorrow, coordinate with finance on security audit budget, coordinate with legal on compliance audit, finalize competitive analysis by Thursday",
+      "owner": "Sarah",
+      "due_date": "end of day tomorrow",
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "auditor quotes, coordinate knowledge transfer with James, set up stress test for next Tuesday, create support training materials",
+      "owner": "External",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "escalate to internal security team, get external auditor quotes, coordinate knowledge transfer with James, set up stress test for next Tuesday, create support training materials",
+      "owner": "Marcus",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update project plan with new launch date and feature set, coordinate performance testing sprint",
+      "owner": "Alex",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "update go-to-market plan with revised timeline and gating criteria, update marketing materials with new launch date, coordinate three-way meeting with legal and product, send bi-weekly status updates, schedule retrospective, follow up on customer testimonials",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "finalize feature specifications for 10 features, coordinate with engineering on prioritization, help with support training materials",
+      "owner": "Priya",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    },
+    {
+      "action": "send Marcus security team contact, communicate new launch date to board, schedule follow-up meeting, send weekly checkpoint calendar invites",
+      "owner": "Me",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.85
+    }
+  ],
+  "risks": [
+    {
+      "risk": "performance degradation when handling large datasets",
+      "category": "Technical",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "on the Salesforce integration",
+      "category": "Technical",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Salesforce changed their API versioning policy, and we need to update our integration code",
+      "category": "Timeline",
+      "mentioned_by": "Alex Thompson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "around data retention policies",
+      "category": "Technical",
+      "mentioned_by": "Emily Wilson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "have them we shouldn't launch",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "and high value for enterprise",
+      "category": "Other",
+      "mentioned_by": "Priya Patel",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I'm concerned about cutting email notifications. How will users know when their reports are ready?",
+      "category": "Other",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That feels aggressive. What if we have issues in phase one? We won't have time to fix them before phase two",
+      "category": "Other",
+      "mentioned_by": "Priya Patel",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That's a valid concern. What do you think is a more realistic timeline, Priya?",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I agree with Priya. We need buffer time to address issues. Also, I want to flag something - we haven't discussed what happens if we find critical bugs during phase one. Do we pause the rollout?",
+      "category": "Technical",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I'd say: data loss, security vulnerabilities, system crashes that affect more than 10% of users, or performance issues that make the product unusable",
+      "category": "Technical",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "derail this launch",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I see is the Salesforce integration delay",
+      "category": "Timeline",
+      "mentioned_by": "Alex Thompson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "about the performance issues we saw in beta",
+      "category": "Technical",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "From a product perspective, I'm concerned about feature completeness. We're cutting features, but are we the remaining features are polished enough? A half-baked feature is worse than no feature",
+      "category": "Other",
+      "mentioned_by": "Priya Patel",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "have enough time to create all the collateral we need",
+      "category": "Other",
+      "mentioned_by": "Marketing risk",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "about support capacity",
+      "category": "Resource",
+      "mentioned_by": "Sarah Martinez",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "- if any of our critical engineers get sick or leave, we're in trouble",
+      "category": "Resource",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "that's a critical risk. Marcus, can you schedule knowledge transfer sessions with James this week? We need to make the junior engineer can handle things if needed",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "need GDPR compliance, CCPA compliance, etc",
+      "category": "Regulatory",
+      "mentioned_by": "Sarah Martinez",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Good catch, Sarah. That's definitely a risk. Have we done compliance review?",
+      "category": "Regulatory",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "we need to add regulatory compliance to our risk list. Sarah, can you coordinate with legal on the compliance audit timeline?",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Now, let's prioritize these risks. What are our top 3?",
+      "category": "Other",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I'd say: security audit delay, performance issues, and Salesforce integration",
+      "category": "Timeline",
+      "mentioned_by": "Alex Thompson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I'd swap performance issues with key person dependency. If James leaves and we're not ready, that's catastrophic",
+      "category": "Technical",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Fair point. Let's make key person dependency number 2. Now, for each of these top risks, we need mitigation plans. Let's go through them quickly",
+      "category": "Resource",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "need to reduce the data volume limits for launch",
+      "category": "Timeline",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "need to restrict launch to certain regions initially if we can't get full compliance in time",
+      "category": "Timeline",
+      "mentioned_by": "Priya Patel",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That's a good question. Given all the risks we've identified, I'm wondering if we should push it back by 2 weeks to give us more buffer",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I'd support that. Two weeks would give us time to address the performance issues properly and complete the security audit",
+      "category": "Timeline",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Let me check the calendar... If we launch October 15th, we have 8 weeks. If we push to October 29th, we have 10 weeks. That's still Q4. I think 10 weeks is more realistic given our risks",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "I agree with David. The extra two weeks would help with Salesforce integration and give us buffer for unexpected issues",
+      "category": "Timeline",
+      "mentioned_by": "Alex Thompson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "positive user feedback from beta customers, feature completeness, and no major usability issues",
+      "category": "Business",
+      "mentioned_by": "From product",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "could delay launch, they should escalate immediately to me, and I'll escalate to the board if needed",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "requires board notification",
+      "category": "Other",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "could delay launch by more than 1 week, any security vulnerability, any budget overrun of more than 10%, or any issue that could impact customer data or privacy",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That makes sense. Should we document this in our risk register?",
+      "category": "Other",
+      "mentioned_by": "Sarah Martinez",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "register with all the risks we discussed, the mitigation plans, and the escalation criteria",
+      "category": "Other",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "We'll have a dedicated support channel for launch issues, and we'll do daily monitoring for the first two weeks",
+      "category": "Timeline",
+      "mentioned_by": "Marcus Johnson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Perfect. Now, let's do a quick check-in. Does anyone have concerns or questions that we haven't addressed?",
+      "category": "Other",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "- we haven't talked about training",
+      "category": "Other",
+      "mentioned_by": "Sarah Martinez",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "Good. Any other concerns?",
+      "category": "Other",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "about server capacity",
+      "category": "Resource",
+      "mentioned_by": "Alex Thompson",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That's a valid concern. Have we done load testing?",
+      "category": "Other",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "about feature completeness",
+      "category": "Other",
+      "mentioned_by": "Priya Patel",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "That's a fair concern. But I think we've made the trade-offs. We can always add features post-launch based on customer feedback. The important thing is to launch with a solid, working product",
+      "category": "Timeline",
+      "mentioned_by": "David Chen",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    },
+    {
+      "risk": "register with all risks and mitigation plans",
+      "category": "Other",
+      "mentioned_by": "Sarah Martinez",
+      "confidence": 0.85,
+      "impact": null,
+      "mitigation": null,
+      "owner": null,
+      "priority": null
+    }
+  ],
+  "quality_metrics": {
+    "summary_length": 587,
+    "decisions_count": 26,
+    "actions_count": 115,
+    "risks_count": 47,
+    "avg_confidence": 0.8499999999999999,
+    "redundancy_ratio": 0.19999999999999996
+  },
+  "quality_warning": false,
+  "metadata": {
+    "speakers": [
+      "From engineering",
+      "Emily Wilson",
+      "Priya Patel",
+      "Marketing risk",
+      "From marketing",
+      "Alex Thompson",
+      "From product",
+      "Marcus Johnson",
+      "From business",
+      "David Chen",
+      "Sarah Martinez"
+    ],
+    "segment_count": 265,
+    "extracted_at": "2025-11-11T02:07:46.150628"
+  },
+  "preprocessing_metadata": {
+    "original_segment_count": 202,
+    "speakers": [
+      "From engineering",
+      "Emily Wilson",
+      "Priya Patel",
+      "Marketing risk",
+      "From marketing",
+      "Alex Thompson",
+      "From product",
+      "Marcus Johnson",
+      "From business",
+      "David Chen",
+      "Sarah Martinez"
+    ],
+    "small_talk_removed": true,
+    "short_turns_merged": true,
+    "filler_removed": true,
+    "speaker_normalized": true,
+    "topic_segments": 33,
+    "final_segment_count": 265
+  }
+}

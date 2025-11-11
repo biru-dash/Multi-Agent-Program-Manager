@@ -247,3 +247,4 @@ All models configured in `backend/app/config/settings.py`:
 - Falls back gracefully if embeddings unavailable
 - Works with existing API endpoints
 
+

@@ -1,11 +1,14 @@
 import { Card } from '@/components/ui/card';
-import { FileText, CheckSquare, AlertTriangle, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, CheckSquare, AlertTriangle, Users, Download } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { type MIAResults } from '@/services/miaService';
+import { toast } from 'sonner';
 
 interface MIAOutputProps {
   output: MIAResults | null;
+  processedTranscriptFilename?: string | null;
 }
 
 const getConfidenceBadge = (confidence: number) => {
@@ -14,7 +17,21 @@ const getConfidenceBadge = (confidence: number) => {
   return { label: 'Low', variant: 'outline' as const, color: 'text-red-500' };
 };
 
-export const MIAOutput = ({ output }: MIAOutputProps) => {
+const downloadJSON = (data: any, filename: string) => {
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  toast.success(`Downloaded ${filename}.json`);
+};
+
+export const MIAOutput = ({ output, processedTranscriptFilename }: MIAOutputProps) => {
   if (!output) {
     return (
       <Card className="p-8 text-center border-border bg-card/50">
@@ -28,11 +45,42 @@ export const MIAOutput = ({ output }: MIAOutputProps) => {
 
   return (
     <div className="space-y-4">
+      {/* Header with Transcript Info and Download All Button */}
+      <div className="flex items-center justify-between mb-4">
+        {processedTranscriptFilename ? (
+          <div className="flex items-center gap-2 text-sm">
+            <FileText className="w-4 h-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Source:</span>
+            <span className="font-medium text-foreground">{processedTranscriptFilename}</span>
+          </div>
+        ) : (
+          <div />
+        )}
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => downloadJSON(output, 'complete-meeting-results')}
+          className="gap-2"
+        >
+          <Download className="w-4 h-4" />
+          Download All Results (JSON)
+        </Button>
+      </div>
+
       {/* Summary */}
       <Card className="p-6 border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-2 mb-4">
           <FileText className="w-5 h-5 text-primary" />
           <h3 className="font-semibold text-foreground">Meeting Summary</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => downloadJSON({ summary: output.summary }, 'meeting-summary')}
+            className="ml-auto text-xs"
+          >
+            <Download className="w-4 h-4 mr-1" />
+            JSON
+          </Button>
         </div>
         <div className="prose prose-invert prose-sm max-w-none">
           <div className="whitespace-pre-wrap text-foreground/90 text-sm leading-relaxed">
@@ -46,9 +94,18 @@ export const MIAOutput = ({ output }: MIAOutputProps) => {
         <div className="flex items-center gap-2 mb-4">
           <CheckSquare className="w-5 h-5 text-success" />
           <h3 className="font-semibold text-foreground">Key Decisions</h3>
-          <Badge variant="secondary" className="ml-auto">
+          <Badge variant="secondary" className="ml-2">
             {output.decisions?.length || 0}
           </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => downloadJSON({ decisions: output.decisions }, 'key-decisions')}
+            className="ml-auto text-xs"
+          >
+            <Download className="w-4 h-4 mr-1" />
+            JSON
+          </Button>
         </div>
         <ul className="space-y-3">
           {output.decisions.map((decision, idx) => {
@@ -76,9 +133,18 @@ export const MIAOutput = ({ output }: MIAOutputProps) => {
         <div className="flex items-center gap-2 mb-4">
           <CheckSquare className="w-5 h-5 text-accent" />
           <h3 className="font-semibold text-foreground">Action Items</h3>
-          <Badge variant="secondary" className="ml-auto">
+          <Badge variant="secondary" className="ml-2">
             {output.action_items?.length || 0}
           </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => downloadJSON({ action_items: output.action_items }, 'action-items')}
+            className="ml-auto text-xs"
+          >
+            <Download className="w-4 h-4 mr-1" />
+            JSON
+          </Button>
         </div>
         <ul className="space-y-3">
           {output.action_items.map((action, idx) => {
@@ -107,9 +173,18 @@ export const MIAOutput = ({ output }: MIAOutputProps) => {
         <div className="flex items-center gap-2 mb-4">
           <AlertTriangle className="w-5 h-5 text-warning" />
           <h3 className="font-semibold text-foreground">Identified Risks</h3>
-          <Badge variant="secondary" className="ml-auto">
+          <Badge variant="secondary" className="ml-2">
             {output.risks?.length || 0}
           </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => downloadJSON({ risks: output.risks }, 'identified-risks')}
+            className="ml-auto text-xs"
+          >
+            <Download className="w-4 h-4 mr-1" />
+            JSON
+          </Button>
         </div>
         <ul className="space-y-3">
           {output.risks.map((risk, idx) => {
@@ -138,6 +213,15 @@ export const MIAOutput = ({ output }: MIAOutputProps) => {
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-secondary" />
             <h3 className="font-semibold text-foreground">Meeting Participants</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => downloadJSON({ participants: output.metadata.speakers, metadata: output.metadata }, 'meeting-metadata')}
+              className="ml-auto text-xs"
+            >
+              <Download className="w-4 h-4 mr-1" />
+              JSON
+            </Button>
           </div>
           <div className="flex flex-wrap gap-2">
             {output.metadata.speakers.map((speaker, idx) => (

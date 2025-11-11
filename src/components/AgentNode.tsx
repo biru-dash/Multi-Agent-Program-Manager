@@ -1,6 +1,6 @@
 import { AgentState } from '@/types/agent';
 import { cn } from '@/lib/utils';
-import { Brain, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Brain, CheckCircle, AlertCircle, Loader2, Clock, Zap } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 interface AgentNodeProps {
@@ -58,13 +58,41 @@ export const AgentNode = ({ agent, className }: AgentNodeProps) => {
         </div>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Section */}
       {agent.status === 'processing' && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Progress value={agent.progress} className="h-2" />
-          <p className="text-xs text-muted-foreground text-right">
-            {agent.progress}% complete
-          </p>
+          <div className="space-y-2">
+            {/* Progress percentage and message */}
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                {agent.progress}% complete
+              </p>
+              {agent.message && (
+                <p className="text-xs text-primary font-medium">
+                  {agent.message}
+                </p>
+              )}
+            </div>
+            
+            {/* Time tracking */}
+            {(agent.elapsed !== undefined || agent.eta !== undefined) && (
+              <div className="flex items-center justify-between text-xs">
+                {agent.elapsed !== undefined && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Clock className="w-3 h-3" />
+                    <span>Elapsed: {Math.floor(agent.elapsed / 60)}:{String(agent.elapsed % 60).padStart(2, '0')}</span>
+                  </div>
+                )}
+                {agent.eta !== undefined && agent.eta > 0 && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Zap className="w-3 h-3" />
+                    <span>ETA: {Math.floor(agent.eta / 60)}:{String(agent.eta % 60).padStart(2, '0')}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

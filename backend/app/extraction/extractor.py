@@ -262,23 +262,19 @@ Provide a concise but comprehensive summary:"""
             return 0.5
     
     def extract_structured_data(self, summary: str, segments: List[TranscriptSegment]) -> Dict[str, Any]:
-        """Extract structured decisions, actions, and risks using specialized extractors with intent tagging."""
-        # Get embedding model for intent tagging
+        """Extract structured decisions, actions, and risks using enhanced extractors."""
+        # Get embedding model for potential use
         embedding_model = self._get_embedding_model()
         
-        # Step 1: Intent tagging - tag sentences with semantic intents
-        intent_tagger = IntentTagger(embedding_model, self.cleaner)
-        tagged_sentences = intent_tagger.tag_sentences(segments)
-        
-        # Step 2: Use specialized extractors
+        # Use enhanced specialized extractors that process full context
         decision_extractor = DecisionExtractor(self.model_adapter, embedding_model)
         action_extractor = ActionExtractor(self.model_adapter, embedding_model)
         risk_extractor = RiskExtractor(self.model_adapter, embedding_model)
         
-        # Step 3: Extract with specialized extractors
-        decisions = decision_extractor.extract(tagged_sentences, segments)
-        action_items = action_extractor.extract(tagged_sentences, segments)
-        risks = risk_extractor.extract(tagged_sentences, segments)
+        # Extract with enhanced extractors - pass empty tagged_sentences to use full context
+        decisions = decision_extractor.extract([], segments)
+        action_items = action_extractor.extract([], segments)
+        risks = risk_extractor.extract([], segments)
         
         # Step 4: Filter low confidence items - but be more lenient
         # Only filter out very low confidence items (< 0.4) to catch more content
@@ -286,10 +282,15 @@ Provide a concise but comprehensive summary:"""
         action_items = [a for a in action_items if a.get("confidence", 0) >= 0.4]
         risks = [r for r in risks if r.get("confidence", 0) >= 0.4]
         
+        # Transform Ollama output format to match frontend expectations
+        transformed_decisions = self._transform_decisions_for_frontend(decisions)
+        transformed_actions = self._transform_actions_for_frontend(action_items)
+        transformed_risks = self._transform_risks_for_frontend(risks)
+        
         return {
-            "decisions": decisions,
-            "action_items": action_items,
-            "risks": risks
+            "decisions": transformed_decisions,
+            "action_items": transformed_actions,
+            "risks": transformed_risks
         }
     
     def _extract_decisions(self, summary: str, segments: List[TranscriptSegment]) -> List[Dict[str, Any]]:
@@ -572,3 +573,52 @@ Provide a concise but comprehensive summary:"""
                 "extracted_at": datetime.utcnow().isoformat()
             }
         }
+    
+    def _transform_decisions_for_frontend(self, decisions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Transform Ollama decision format to frontend expected format."""
+        transformed = []
+        for decision in decisions:
+            # Ollama format: {"decision": "text", "participants": [...], "confidence": 0.9}
+            # Frontend expects: {"text": "text", "speaker": "name", "timestamp": null, "confidence": 0.9}
+            
+            # Extract main speaker from participants
+            participants = decision.get("participants", [])
+            speaker = None
+            if participants:
+                # Use first participant as primary speaker
+                if isinstance(participants, list) and len(participants) > 0:
+                    speaker = participants[0]
+                elif isinstance(participants, str):
+                    speaker = participants
+            
+            transformed.append({
+                "text": decision.get("decision", decision.get("text", "")),
+                "speaker": speaker,
+                "timestamp": None,  # Not available from Ollama
+                "confidence": decision.get("confidence", 0.5)
+            })
+        return transformed
+    
+    def _transform_actions_for_frontend(self, actions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Transform action items to frontend format (already matches)."""
+        # Action items already match frontend format:
+        # {"action": "...", "owner": "...", "due_date": "...", "priority": "...", "confidence": ...}
+        return actions
+    
+    def _transform_risks_for_frontend(self, risks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Transform Ollama risk format to frontend expected format."""
+        transformed = []
+        for risk in risks:
+            # Frontend expects: {"risk": "text", "mentioned_by": "name", "confidence": 0.9}
+            # This format should already match what Ollama returns
+            transformed.append({
+                "risk": risk.get("risk", ""),
+                "category": risk.get("category"),
+                "mentioned_by": risk.get("mentioned_by"),
+                "confidence": risk.get("confidence", 0.5),
+                "impact": risk.get("impact"),
+                "mitigation": risk.get("mitigation"),
+                "owner": risk.get("owner"),
+                "priority": risk.get("priority")
+            })
+        return transformed

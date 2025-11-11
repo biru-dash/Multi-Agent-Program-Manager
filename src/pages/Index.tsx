@@ -24,10 +24,20 @@ const Index = () => {
   });
 
   const [agents, setAgents] = useState<AgentState[]>([
-    { id: 'mia', name: 'Meeting Intelligence Agent', status: 'idle', progress: 0 },
+    { 
+      id: 'mia', 
+      name: 'Meeting Intelligence Agent', 
+      status: 'idle', 
+      progress: 0,
+      message: undefined,
+      elapsed: undefined,
+      eta: undefined,
+      estimatedTotal: undefined
+    },
   ]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [selectedTranscriptFilename, setSelectedTranscriptFilename] = useState<string | null>(null);
+  const [processedTranscriptFilename, setProcessedTranscriptFilename] = useState<string | null>(null);
   const [miaOutput, setMiaOutput] = useState<MIAResults | null>(null);
   const [uploadId, setUploadId] = useState<string | null>(null);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
@@ -128,7 +138,12 @@ const Index = () => {
     setIsProcessing(true);
     setMiaOutput(null);
 
+    // Determine which transcript is being processed
+    const currentTranscriptName = selectedTranscriptFilename || 
+      (uploadedFiles.length > 0 ? uploadedFiles[0].name : 'Unknown file');
+
     addLog('info', 'Starting transcript processing...');
+    addLog('info', `Processing transcript: ${currentTranscriptName}`);
     addLog('info', `Model strategy: ${config.modelStrategy || 'local'}`);
     addLog('info', `Preprocessing level: ${config.preprocessing || 'advanced'}`);
 
@@ -176,7 +191,11 @@ const Index = () => {
                       : status.status === 'failed' 
                         ? 'error' 
                         : 'processing',
-                    error: status.error
+                    error: status.error,
+                    message: status.message,
+                    elapsed: status.elapsed,
+                    eta: status.eta,
+                    estimatedTotal: status.estimated_total
                   }
                 : a
             )
@@ -201,6 +220,7 @@ const Index = () => {
       // Get results
       const results = await miaService.getResults(processResponse.job_id);
       setMiaOutput(results);
+      setProcessedTranscriptFilename(currentTranscriptName);
       
       addLog('success', 'Results retrieved successfully');
       addLog('info', `Found ${results.decisions.length} decisions, ${results.action_items.length} action items, ${results.risks.length} risks`);
@@ -229,9 +249,19 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setAgents([{ id: 'mia', name: 'Meeting Intelligence Agent', status: 'idle', progress: 0 }]);
+    setAgents([{ 
+      id: 'mia', 
+      name: 'Meeting Intelligence Agent', 
+      status: 'idle', 
+      progress: 0,
+      message: undefined,
+      elapsed: undefined,
+      eta: undefined,
+      estimatedTotal: undefined
+    }]);
     setUploadedFiles([]);
     setSelectedTranscriptFilename(null);
+    setProcessedTranscriptFilename(null);
     setUploadId(null);
     setCurrentJobId(null);
     setMiaOutput(null);
@@ -315,6 +345,20 @@ const Index = () => {
                   ✓ File ready for processing
                 </div>
               )}
+              {processedTranscriptFilename && miaOutput && (
+                <div className="mt-3 p-3 bg-success/10 border border-success/20 rounded text-xs">
+                  <div className="flex items-center gap-2 text-success font-medium">
+                    <div className="w-2 h-2 rounded-full bg-success"></div>
+                    <span>Processed Transcript</span>
+                  </div>
+                  <div className="text-success/80 mt-1 break-all">
+                    {processedTranscriptFilename}
+                  </div>
+                  <div className="text-success/60 mt-1">
+                    Results: {miaOutput.decisions.length} decisions, {miaOutput.action_items.length} actions, {miaOutput.risks.length} risks
+                  </div>
+                </div>
+              )}
             </Card>
             {/* Activity Log */}
             <LogPanel logs={logs} onClear={handleClearLogs} />
@@ -331,7 +375,7 @@ const Index = () => {
             <Card className="border-border bg-card/50 backdrop-blur-sm">
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-foreground mb-4">Meeting Intelligence Results</h2>
-                <MIAOutput output={miaOutput} />
+                <MIAOutput output={miaOutput} processedTranscriptFilename={processedTranscriptFilename} />
               </div>
             </Card>
           </div>

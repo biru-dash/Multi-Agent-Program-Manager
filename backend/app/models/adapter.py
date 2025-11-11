@@ -387,9 +387,12 @@ class HybridAdapter(ModelAdapter):
             return self.local_adapter.generate_structured(prompt, max_length)
 
 
-def get_model_adapter() -> ModelAdapter:
+def get_model_adapter(strategy: Optional[str] = None) -> ModelAdapter:
     """Factory function to get the appropriate model adapter based on settings."""
-    strategy = settings.model_strategy.lower()
+    if strategy is None:
+        strategy = settings.model_strategy.lower()
+    else:
+        strategy = strategy.lower()
     
     if strategy == "local":
         return LocalTransformerAdapter()
@@ -401,5 +404,8 @@ def get_model_adapter() -> ModelAdapter:
         if not settings.huggingface_token:
             raise ValueError("HUGGINGFACE_TOKEN is required for hybrid strategy")
         return HybridAdapter(settings.huggingface_token)
+    elif strategy == "ollama":
+        from app.models.ollama_adapter import OllamaAdapter
+        return OllamaAdapter()
     else:
-        raise ValueError(f"Unknown model strategy: {strategy}")
+        raise ValueError(f"Unknown model strategy: {strategy}. Available: local, remote, hybrid, ollama")

@@ -1,0 +1,179 @@
+{
+  "extraction_results": {
+    "decisions": [
+      {
+        "decision": "Finalize marketing messaging",
+        "participants": [
+          "Emily"
+        ],
+        "category": "process"
+      },
+      {
+        "decision": "Assign action to Sarah regarding Salesforce integration",
+        "participants": [
+          "David",
+          "Sarah"
+        ],
+        "category": "process"
+      },
+      {
+        "decision": "Escalate security audit to internal team lead",
+        "participants": [
+          "Marcus",
+          "David"
+        ],
+        "category": "process"
+      },
+      {
+        "decision": "Schedule three-way meeting between legal, product team, and Emily",
+        "participants": [
+          "Emily",
+          "Legal",
+          "Product Team"
+        ],
+        "category": "communication"
+      },
+      {
+        "decision": "Cut custom branding option from feature set",
+        "participants": [
+          "David",
+          "Team"
+        ],
+        "category": "features"
+      },
+      {
+        "decision": "Keep email notifications and cut scheduled reports",
+        "participants": [
+          "David",
+          "Marcus"
+        ],
+        "category": "features"
+      },
+      {
+        "decision": "Update go-to-market plan with revised timeline and gating criteria",
+        "participants": [
+          "Emily",
+          "Team"
+        ],
+        "category": "process"
+      },
+      {
+        "decision": "Prioritize competitive analysis for pricing",
+        "participants": [
+          "Sarah",
+          "David"
+        ],
+        "category": "process"
+      }
+    ],
+    "action_items": [
+      {
+        "action": "Finalize marketing messaging",
+        "owner": "Emily",
+        "due_date": null,
+        "priority": "high"
+      },
+      {
+        "action": "Assign action to Sarah regarding Salesforce integration",
+        "owner": "Sarah",
+        "due_date": null,
+        "priority": "medium"
+      },
+      {
+        "action": "Escalate security audit to internal team lead",
+        "owner": "Marcus",
+        "due_date": null,
+        "priority": "high"
+      },
+      {
+        "action": "Schedule three-way meeting between legal, product team, and Emily",
+        "owner": "Emily",
+        "due_date": null,
+        "priority": "medium"
+      },
+      {
+        "action": "Cut custom branding option from feature set",
+        "owner": "David",
+        "due_date": null,
+        "priority": "high"
+      },
+      {
+        "action": "Keep email notifications and cut scheduled reports",
+        "owner": "Marcus",
+        "due_date": null,
+        "priority": "medium"
+      },
+      {
+        "action": "Update go-to-market plan with revised timeline and gating criteria",
+        "owner": "Emily",
+        "due_date": null,
+        "priority": "high"
+      },
+      {
+        "action": "Prioritize competitive analysis for pricing",
+        "owner": "Sarah",
+        "due_date": "Thursday",
+        "priority": "high"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Salesforce integration delay",
+        "category": "Technical",
+        "mentioned_by": "Alex",
+        "impact": "high"
+      },
+      {
+        "risk": "Performance issues in beta",
+        "category": "Technical",
+        "mentioned_by": "Marcus",
+        "impact": "medium"
+      },
+      {
+        "risk": "Feature completeness concerns",
+        "category": "Business",
+        "mentioned_by": "Priya",
+        "impact": "high"
+      },
+      {
+        "risk": "Support capacity constraints",
+        "category": "Resource",
+        "mentioned_by": "Sarah",
+        "impact": "medium"
+      },
+      {
+        "risk": "Key person dependency on James",
+        "category": "Resource",
+        "mentioned_by": "Marcus",
+        "impact": "high"
+      },
+      {
+        "risk": "Regulatory compliance concerns",
+        "category": "Regulatory",
+        "mentioned_by": "Sarah",
+        "impact": "medium"
+      }
+    ]
+  },
+  "validation_metrics": {
+    "counts": {
+      "decisions": 8,
+      "actions": 8,
+      "risks": 6
+    },
+    "scores": {
+      "decision_score": 0.8888888888888888,
+      "action_score": 0.4,
+      "risk_score": 0.3333333333333333,
+      "overall_score": 0.5407407407407406
+    },
+    "quality_grade": "FAIR"
+  },
+  "optimization_summary": {
+    "method": "single_comprehensive_pass",
+    "context_length": 29461,
+    "processing_time": "efficient",
+    "temperature_used": 0.3,
+    "success_level": "FAIR"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "decisions": [
+    {
+      "decision": "Launch with 10 features",
+      "rationale": "",
+      "participants": [
+        "Chen",
+        "Patel"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "decision": "Set up stress test for next Tuesday",
+      "rationale": "",
+      "participants": [
+        "Johnson"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "decision": "Create support training materials",
+      "rationale": "",
+      "participants": [
+        "Johnson",
+        "Patel"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "decision": "Schedule retrospective for 2 weeks after launch",
+      "rationale": "",
+      "participants": [
+        "Wilson"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "decision": "Communicate new launch date to the board",
+      "rationale": "",
+      "participants": [
+        "Chen"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "decision": "Schedule follow-up meeting for next Monday at 10 AM",
+      "rationale": "",
+      "participants": [
+        "Chen"
+      ],
+      "confidence": 0.9
+    }
+  ],
+  "action_items": [
+    {
+      "action": "contact Salesforce account manager by EOD tomorrow",
+      "owner": "Sarah",
+      "due_date": "EOD tomorrow",
+      "priority": "high",
+      "confidence": 0.9
+    },
+    {
+      "action": "escalate to internal security team, get external auditor quotes, coordinate knowledge transfer with James, set up stress test for next Tuesday, create support training materials",
+      "owner": "Marcus",
+      "due_date": "next Tuesday",
+      "priority": "high",
+      "confidence": 0.9
+    },
+    {
+      "action": "update project plan with new launch date and feature set, coordinate performance testing sprint",
+      "owner": "Alex",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.8
+    },
+    {
+      "action": "update go-to-market plan with revised timeline and gating criteria, update marketing materials with new launch date, coordinate three-way meeting with legal and product, send bi-weekly status updates, schedule retrospective, follow up on customer testimonials",
+      "owner": "Emily",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.8
+    },
+    {
+      "action": "finalize feature specifications for 10 features, coordinate with engineering on prioritization, help with support training materials",
+      "owner": "Priya",
+      "due_date": null,
+      "priority": "medium",
+      "confidence": 0.8
+    },
+    {
+      "action": "send Marcus security team contact, communicate new launch date to board, schedule follow-up meeting, send weekly checkpoint calendar invites",
+      "owner": "David",
+      "due_date": null,
+      "priority": "low",
+      "confidence": 0.7
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Launch delay due to critical bugs",
+      "category": "Technical",
+      "mentioned_by": "Alex",
+      "confidence": 0.9
+    },
+    {
+      "risk": "Security vulnerability during launch",
+      "category": "Regulatory",
+      "mentioned_by": "Marcus",
+      "confidence": 0.8
+    },
+    {
+      "risk": "Insufficient server capacity for user surge on launch day",
+      "category": "Technical",
+      "mentioned_by": "Alex",
+      "confidence": 0.7
+    },
+    {
+      "risk": "Feature completeness issues due to limited features",
+      "category": "Business",
+      "mentioned_by": "Priya",
+      "confidence": 0.6
+    }
+  ],
+  "summary": {
+    "total_decisions": 6,
+    "total_actions": 6,
+    "total_risks": 4,
+    "success_metrics": {
+      "decisions": true,
+      "actions": false,
+      "risks": false,
+      "overall": false
+    }
+  }
+}

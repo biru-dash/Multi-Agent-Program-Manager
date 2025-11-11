@@ -183,12 +183,75 @@ class TranscriptCleaner:
         merged.append(current_segment)
         return merged
     
+    def _is_valid_speaker_name(self, speaker: str) -> bool:
+        """Validate if a string looks like a real speaker name."""
+        if not speaker:
+            return False
+        
+        # Remove whitespace and check length
+        speaker = speaker.strip()
+        if len(speaker) < 2:
+            return False
+        
+        # Invalid patterns - phrases that are not names
+        invalid_patterns = [
+            r'^from\s+',  # "from engineering", "from business"
+            r'\s+risk$',  # "marketing risk"
+            r'^risk\s+',  # "risk assessment"
+            r'^meeting\s+',  # "meeting participants"
+            r'^topic\s+',  # "topic discussion"
+            r'^\d+$',  # just numbers like "12"
+            r'^[a-z]',  # starts with lowercase (not a proper name)
+            r'^and\s+',  # "and then"
+            r'^the\s+',  # "the team"
+            r'^discussion\s+',  # "discussion about"
+            r'^next\s+',  # "next steps"
+        ]
+        
+        for pattern in invalid_patterns:
+            if re.match(pattern, speaker.lower()):
+                return False
+        
+        # Valid patterns - should look like names
+        words = speaker.split()
+        
+        # Single word - should be a proper name (starts with capital)
+        if len(words) == 1:
+            return words[0][0].isupper() and len(words[0]) > 1
+        
+        # Multiple words - at least first two should be proper names
+        if len(words) >= 2:
+            # Check if first two words look like names (start with capital, have reasonable length)
+            first_name = words[0]
+            second_name = words[1]
+            
+            # Basic name validation
+            if (first_name[0].isupper() and len(first_name) > 1 and
+                second_name[0].isupper() and len(second_name) > 1):
+                return True
+        
+        return False
+
     def normalize_speakers(self, segments: List[TranscriptSegment]) -> List[TranscriptSegment]:
         """Normalize speaker names to canonical forms."""
-        # Build speaker mapping
+        # First filter out invalid speakers
+        filtered_segments = []
+        for segment in segments:
+            if segment.speaker:
+                if self._is_valid_speaker_name(segment.speaker):
+                    filtered_segments.append(segment)
+                else:
+                    # Remove invalid speaker but keep the segment
+                    filtered_segments.append(
+                        TranscriptSegment(segment.text, speaker=None, timestamp=segment.timestamp)
+                    )
+            else:
+                filtered_segments.append(segment)
+        
+        # Build speaker mapping for valid speakers
         speaker_variants = defaultdict(set)
         
-        for segment in segments:
+        for segment in filtered_segments:
             if segment.speaker:
                 # Extract base name (first word or first two words)
                 base = segment.speaker.strip().lower()
@@ -209,9 +272,9 @@ class TranscriptCleaner:
             for variant in variants:
                 speaker_map[variant] = canonical
         
-        # Apply normalization
+        # Apply normalization to filtered segments
         normalized_segments = []
-        for segment in segments:
+        for segment in filtered_segments:
             if segment.speaker and segment.speaker.strip() in speaker_map:
                 normalized_speaker = speaker_map[segment.speaker.strip()]
                 normalized_segments.append(

@@ -23,6 +23,10 @@ export interface JobStatus {
   progress: number;
   message: string;
   error?: string;
+  elapsed?: number;
+  eta?: number;
+  estimated_total?: number;
+  actual_time?: number;
 }
 
 export interface MIAResults {
@@ -173,7 +177,7 @@ class MIAService {
    */
   async processTranscript(
     uploadId: string,
-    modelStrategy: 'local' | 'remote' | 'hybrid' = 'hybrid',
+    modelStrategy: 'local' | 'remote' | 'hybrid' | 'ollama' = 'hybrid',
     preprocessing: 'basic' | 'advanced' = 'advanced'
   ): Promise<{ job_id: string; status: string; message: string }> {
     const response = await fetch(
