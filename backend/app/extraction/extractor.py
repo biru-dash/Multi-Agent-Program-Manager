@@ -12,6 +12,9 @@ from app.preprocessing.cleaner import TranscriptCleaner
 from app.extraction.specialized_extractors import (
     IntentTagger, DecisionExtractor, ActionExtractor, RiskExtractor
 )
+from app.extraction.provenance import ProvenanceTracker
+from app.extraction.validator import ExtractionValidator
+from app.models.model_manager import model_manager
 
 
 class MeetingExtractor:
@@ -48,6 +51,10 @@ class MeetingExtractor:
         self.cleaner = cleaner or TranscriptCleaner()
         self._embedding_model = None
         self._summary_embedding = None
+        
+        # Initialize new components
+        self.provenance_tracker = ProvenanceTracker()
+        self.validator = None  # Will be initialized with embedding model
     
     def _get_embedding_model(self):
         """Lazy load embedding model for confidence scoring."""
@@ -325,6 +332,13 @@ Create a 2-3 paragraph professional executive summary that captures all key info
         # Get embedding model for potential use
         embedding_model = self._get_embedding_model()
         
+        # Initialize validator and provenance tracker
+        if embedding_model and not self.validator:
+            self.validator = ExtractionValidator(embedding_model)
+        
+        # Set up provenance tracking
+        self.provenance_tracker.set_source_segments(segments, embedding_model)
+        
         # Use enhanced specialized extractors that process full context
         decision_extractor = DecisionExtractor(self.model_adapter, embedding_model)
         action_extractor = ActionExtractor(self.model_adapter, embedding_model)
@@ -334,6 +348,17 @@ Create a 2-3 paragraph professional executive summary that captures all key info
         decisions = decision_extractor.extract([], segments)
         action_items = action_extractor.extract([], segments)
         risks = risk_extractor.extract([], segments)
+        
+        # Add provenance tracking to all items
+        decisions = [self.provenance_tracker.track_decision(d, "llm") for d in decisions]
+        action_items = [self.provenance_tracker.track_action(a, "llm") for a in action_items]
+        risks = [self.provenance_tracker.track_risk(r, "llm") for r in risks]
+        
+        # Add validation if validator available
+        if self.validator:
+            decisions = self.validator.validate_decisions(decisions, segments)
+            action_items = self.validator.validate_actions(action_items, segments)
+            risks = self.validator.validate_risks(risks, segments)
         
         # Step 4: Filter low confidence items - but be more lenient
         # Only filter out very low confidence items (< 0.4) to catch more content

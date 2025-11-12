@@ -1,7 +1,7 @@
 """Configuration settings for the MIA application."""
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
-from typing import Literal
+from typing import Literal, Dict
 from pathlib import Path
 import os
 
@@ -60,6 +60,56 @@ class Settings(BaseSettings):
     # Model Strategy: local, remote, or hybrid
     # Set to "local" for testing with local models only
     model_strategy: Literal["local", "remote", "hybrid"] = "local"
+    
+    # Step-specific model configurations
+    # Each step can use a different model type and provider
+    models: Dict[str, Dict[str, str]] = {
+        "summarization": {
+            "provider": "ollama",  # ollama, openai, huggingface, local
+            "model": "llama3.2",
+            "fallback": "llama3"
+        },
+        "decision_extraction": {
+            "provider": "ollama",
+            "model": "llama3.2",
+            "fallback": "llama3"
+        },
+        "action_extraction": {
+            "provider": "ollama", 
+            "model": "llama3.2",
+            "fallback": "llama3"
+        },
+        "risk_extraction": {
+            "provider": "ollama",
+            "model": "llama3.2", 
+            "fallback": "llama3"
+        },
+        "diarization": {
+            "provider": "pyannote",  # pyannote, nemo, local
+            "model": "pyannote/speaker-diarization-3.1",
+            "fallback": "simple"
+        },
+        "punctuation": {
+            "provider": "local",  # local, openai, huggingface
+            "model": "oliverguhr/fullstop-punctuation-multilang-large", 
+            "fallback": "rule_based"
+        },
+        "embedding": {
+            "provider": "sentence_transformers",
+            "model": "all-mpnet-base-v2",
+            "fallback": "all-MiniLM-L6-v2"
+        },
+        "entity_recognition": {
+            "provider": "spacy",  # spacy, huggingface, ollama
+            "model": "en_core_web_sm",
+            "fallback": "rule_based"
+        },
+        "temporal_extraction": {
+            "provider": "duckling",  # duckling, sutime, rule_based
+            "model": "duckling-server",
+            "fallback": "rule_based"
+        }
+    }
     
     # Directory Configuration
     upload_dir: str = "./uploads"

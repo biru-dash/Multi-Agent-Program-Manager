@@ -36,10 +36,11 @@ class OllamaAdapter:
             response = requests.post(
                 self.api_url,
                 json={"model": self.model_name, "prompt": "Hello", "stream": False},
-                timeout=30
+                timeout=60  # Increased timeout for cold model loading
             )
             if response.status_code != 200:
                 raise ConnectionError(f"Ollama server returned {response.status_code}")
+            logger.info(f"Successfully connected to Ollama with model {self.model_name}")
         except Exception as e:
             logger.error(f"Failed to connect to Ollama: {e}")
             raise ConnectionError(f"Cannot connect to Ollama server at {self.base_url}")

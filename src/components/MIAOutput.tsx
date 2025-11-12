@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { type MIAResults } from '@/services/miaService';
 import { toast } from 'sonner';
+import { ProvenanceView } from './ProvenanceView';
 
 interface MIAOutputProps {
   output: MIAResults | null;
@@ -107,25 +108,16 @@ export const MIAOutput = ({ output, processedTranscriptFilename }: MIAOutputProp
             JSON
           </Button>
         </div>
-        <ul className="space-y-3">
-          {output.decisions.map((decision, idx) => {
-            const confidence = getConfidenceBadge(decision.confidence);
-            return (
-              <li key={idx} className="flex items-start gap-3 text-sm">
-                <span className="text-success mt-1">•</span>
-                <div className="flex-1">
-                  <span className="text-foreground/90">{decision.text}</span>
-                  {decision.speaker && (
-                    <span className="text-muted-foreground text-xs ml-2">— {decision.speaker}</span>
-                  )}
-                  <Badge variant={confidence.variant} className="ml-2 text-xs">
-                    {confidence.label} Confidence
-                  </Badge>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-3">
+          {output.decisions.map((decision, idx) => (
+            <ProvenanceView
+              key={idx}
+              item={decision}
+              itemType="decision"
+              originalSegments={output.metadata?.original_segments || []}
+            />
+          ))}
+        </div>
       </Card>
 
       {/* Actions */}
@@ -146,26 +138,16 @@ export const MIAOutput = ({ output, processedTranscriptFilename }: MIAOutputProp
             JSON
           </Button>
         </div>
-        <ul className="space-y-3">
-          {output.action_items.map((action, idx) => {
-            const confidence = getConfidenceBadge(action.confidence);
-            return (
-              <li key={idx} className="flex items-start gap-3 text-sm">
-                <span className="text-accent mt-1">•</span>
-                <div className="flex-1">
-                  <div className="text-foreground/90 font-medium">{action.action}</div>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                    {action.owner && <span>Owner: {action.owner}</span>}
-                    {action.due_date && <span>• Due: {action.due_date}</span>}
-                    <Badge variant={confidence.variant} className="text-xs">
-                      {(action.priority || 'medium').toUpperCase()} • {confidence.label}
-                    </Badge>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-3">
+          {output.action_items.map((action, idx) => (
+            <ProvenanceView
+              key={idx}
+              item={action}
+              itemType="action"
+              originalSegments={output.metadata?.original_segments || []}
+            />
+          ))}
+        </div>
       </Card>
 
       {/* Risks */}
@@ -186,25 +168,16 @@ export const MIAOutput = ({ output, processedTranscriptFilename }: MIAOutputProp
             JSON
           </Button>
         </div>
-        <ul className="space-y-3">
-          {output.risks.map((risk, idx) => {
-            const confidence = getConfidenceBadge(risk.confidence);
-            return (
-              <li key={idx} className="flex items-start gap-3 text-sm">
-                <span className="text-warning mt-1">⚠</span>
-                <div className="flex-1">
-                  <span className="text-foreground/90">{risk.risk}</span>
-                  {risk.mentioned_by && (
-                    <span className="text-muted-foreground text-xs ml-2">— mentioned by {risk.mentioned_by}</span>
-                  )}
-                  <Badge variant={confidence.variant} className="ml-2 text-xs">
-                    {confidence.label} Confidence
-                  </Badge>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-3">
+          {output.risks.map((risk, idx) => (
+            <ProvenanceView
+              key={idx}
+              item={risk}
+              itemType="risk"
+              originalSegments={output.metadata?.original_segments || []}
+            />
+          ))}
+        </div>
       </Card>
 
       {/* Speakers */}
