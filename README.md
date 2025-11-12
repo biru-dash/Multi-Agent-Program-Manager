@@ -205,7 +205,314 @@ graph TB
 
 ## Extraction and Evaluation Architecture
 
-### Core Extraction Pipeline
+### Core Extraction Pipeline Overview
+
+The meeting extraction system processes transcripts through a sophisticated multi-stage pipeline that transforms raw meeting data into structured, actionable insights:
+
+```mermaid
+graph TB
+    subgraph "📥 Input Processing"
+        A[📄 Raw Transcript] --> B[🔍 Format Detection<br/>TXT/JSON/SRT]
+        B --> C[🧹 Text Cleaning<br/>Remove filler, normalize]
+        C --> D[👥 Speaker Attribution<br/>Identify participants]
+        D --> E[⏰ Timestamp Parsing<br/>Extract timing info]
+    end
+
+    subgraph "🔧 Advanced Preprocessing" 
+        E --> F[📊 Semantic Chunking<br/>Topic segmentation]
+        F --> G[🔗 Context Building<br/>Cross-references]
+        G --> H[📋 Metadata Extraction<br/>Meeting type, duration]
+    end
+
+    subgraph "🧠 Multi-Component Extraction"
+        H --> I[📝 Summary Pipeline]
+        H --> J[⚖️ Decisions Pipeline] 
+        H --> K[✅ Action Items Pipeline]
+        H --> L[⚠️ Risk Pipeline]
+    end
+
+    subgraph "🎯 Quality & Output"
+        I --> M[🔍 Confidence Scoring]
+        J --> M
+        K --> M
+        L --> M
+        M --> N[📊 Provenance Linking]
+        N --> O[📋 Final Results JSON]
+    end
+
+    style A fill:#e3f2fd
+    style H fill:#f3e5f5
+    style M fill:#fff3e0
+    style O fill:#e8f5e8
+```
+
+### Detailed Extraction Workflows
+
+#### 1. Preprocessing Pipeline
+
+The preprocessing stage transforms raw transcripts into analysis-ready structured data:
+
+```mermaid
+sequenceDiagram
+    participant Raw as Raw Transcript
+    participant Parser as Format Parser
+    participant Cleaner as Text Cleaner
+    participant Segmenter as Topic Segmenter
+    participant Meta as Metadata Extractor
+
+    Note over Raw,Meta: Preprocessing Workflow
+
+    Raw->>Parser: 1. Input transcript file
+    Parser->>Parser: 2. Detect format (TXT/JSON/SRT)
+    Parser->>Parser: 3. Extract speaker labels & timestamps
+    Parser->>Cleaner: 4. Parsed transcript data
+
+    Note over Cleaner: Text Cleaning Process
+    Cleaner->>Cleaner: 5a. Remove filler words ("um", "uh")
+    Cleaner->>Cleaner: 5b. Normalize speaker names
+    Cleaner->>Cleaner: 5c. Merge consecutive short turns
+    Cleaner->>Cleaner: 5d. Fix common transcription errors
+
+    Cleaner->>Segmenter: 6. Cleaned transcript
+    
+    Note over Segmenter: Semantic Segmentation
+    Segmenter->>Segmenter: 7a. Embedding-based topic detection
+    Segmenter->>Segmenter: 7b. Create semantic chunks
+    Segmenter->>Segmenter: 7c. Preserve speaker boundaries
+
+    Segmenter->>Meta: 8. Segmented transcript
+    Meta->>Meta: 9a. Estimate meeting duration
+    Meta->>Meta: 9b. Identify meeting type
+    Meta->>Meta: 9c. Count participants
+    Meta->>Meta: 9d. Extract recurring patterns
+
+    Meta-->>Raw: 10. Structured transcript ready for extraction
+```
+
+#### 2. Component-Specific Extraction Pipelines
+
+Each extraction component follows a specialized pipeline optimized for its specific task:
+
+```mermaid
+graph TB
+    subgraph "📝 Summary Extraction Pipeline"
+        S1[📊 Hierarchical Chunking] --> S2[🧠 Chunk Summarization]
+        S2 --> S3[🔄 Recursive Combination]
+        S3 --> S4[🎯 Executive Summary]
+        S4 --> S5[✅ Quality Gating]
+    end
+
+    subgraph "⚖️ Decision Extraction Pipeline"
+        D1[🔍 Decision Pattern Detection] --> D2[📊 Confidence Scoring]
+        D2 --> D3[✅ Multi-stage Validation]
+        D3 --> D4[🔗 Provenance Mapping]
+        D4 --> D5[📋 Structured Decision Output]
+    end
+
+    subgraph "✅ Action Item Pipeline"
+        A1[🎯 Task Identification] --> A2[👤 Owner Extraction]
+        A2 --> A3[⏰ Timeline Detection]
+        A3 --> A4[📊 Priority Classification]
+        A4 --> A5[🔗 Cross-reference Validation]
+    end
+
+    subgraph "⚠️ Risk Identification Pipeline"
+        R1[🚨 Risk Signal Detection] --> R2[📊 Impact Assessment]
+        R2 --> R3[🎯 Likelihood Estimation]
+        R3 --> R4[🛠️ Mitigation Identification]
+        R4 --> R5[📋 Risk Categorization]
+    end
+
+    subgraph "📊 Common Processing Steps"
+        CS1[🔍 NER & Entity Linking]
+        CS2[⏰ Temporal Extraction]
+        CS3[📊 Confidence Calculation]
+        CS4[🔗 Provenance Tracking]
+    end
+
+    S1 --> CS1
+    D1 --> CS1
+    A1 --> CS1
+    R1 --> CS1
+    
+    CS1 --> CS2
+    CS2 --> CS3
+    CS3 --> CS4
+
+    style S1 fill:#e8f5e8
+    style D1 fill:#fff3e0
+    style A1 fill:#f3e5f5
+    style R1 fill:#ffebee
+    style CS1 fill:#e1f5fe
+```
+
+#### 3. Model Strategy and Orchestration
+
+The system intelligently selects and orchestrates different model types based on the configured strategy:
+
+```mermaid
+graph TB
+    subgraph "🎛️ Model Strategy Selection"
+        A[📊 Model Strategy Config] --> B{Strategy Type?}
+        
+        B -->|local| C[🏠 Local Models Only]
+        B -->|remote| D[☁️ Remote APIs Only] 
+        B -->|hybrid| E[🔄 Hybrid Approach]
+        B -->|ollama| F[🦙 Ollama/Llama Models]
+    end
+
+    subgraph "🏠 Local Processing"
+        C --> C1[🧠 Local NER Model<br/>dslim/bert-base-NER]
+        C --> C2[📊 Local Embedding<br/>sentence-transformers]
+        C --> C3[📝 Local Summarization<br/>philschmid/bart-large-cnn]
+        C1 --> C4[💾 No API Calls]
+        C2 --> C4
+        C3 --> C4
+    end
+
+    subgraph "☁️ Remote Processing"
+        D --> D1[🌐 HuggingFace API]
+        D --> D2[📡 External Models]
+        D1 --> D3[💸 API Cost Optimization]
+        D2 --> D3
+    end
+
+    subgraph "🔄 Hybrid Intelligence"
+        E --> E1[🏠 Local: NER + Embeddings]
+        E --> E2[☁️ Remote: Complex Summarization]
+        E --> E3[🦙 Ollama: Decision Analysis]
+        E1 --> E4[⚡ Optimal Performance]
+        E2 --> E4
+        E3 --> E4
+    end
+
+    subgraph "🦙 Ollama Integration"
+        F --> F1[🔗 Local Llama3.2/Llama3]
+        F --> F2[🚀 High Performance Inference]
+        F1 --> F3[💪 Complete Local Control]
+        F2 --> F3
+    end
+
+    style A fill:#e3f2fd
+    style E4 fill:#e8f5e8
+    style F3 fill:#fff3e0
+    style C4 fill:#f3e5f5
+```
+
+#### 4. Provenance and Confidence Tracking
+
+Every extracted item includes comprehensive provenance data linking back to source transcript segments:
+
+```mermaid
+graph LR
+    subgraph "📋 Source Transcript"
+        T1[Segment 1<br/>00:05-01:30]
+        T2[Segment 2<br/>01:30-03:15]
+        T3[Segment 3<br/>03:15-05:00]
+        T4[Segment 4<br/>05:00-07:30]
+    end
+
+    subgraph "🔗 Extraction Mapping"
+        E1[📝 Summary<br/>Confidence: 0.89]
+        E2[⚖️ Decision A<br/>Confidence: 0.92]
+        E3[✅ Action Item<br/>Confidence: 0.85]
+        E4[⚠️ Risk B<br/>Confidence: 0.78]
+    end
+
+    subgraph "📊 Provenance Metadata"
+        P1[🔍 Source Segments<br/>Speaker Attribution<br/>Timestamp Range<br/>Context Window]
+        P2[📊 Confidence Factors<br/>Pattern Strength<br/>Context Clarity<br/>Validation Score]
+        P3[🔗 Cross-references<br/>Related Items<br/>Supporting Evidence<br/>Contradictions]
+    end
+
+    T1 --> E1
+    T2 --> E1
+    T1 --> E2
+    T3 --> E2
+    T3 --> E3
+    T4 --> E4
+
+    E1 --> P1
+    E2 --> P1
+    E3 --> P1
+    E4 --> P1
+
+    E1 --> P2
+    E2 --> P2
+    E3 --> P2
+    E4 --> P2
+
+    P1 --> P3
+    P2 --> P3
+
+    style T2 fill:#e3f2fd
+    style E2 fill:#f3e5f5
+    style P2 fill:#fff3e0
+    style P3 fill:#e8f5e8
+```
+
+#### 5. Complete Data Flow: Transcript to UI
+
+This diagram shows the complete journey from raw transcript upload to structured results displayed in the UI:
+
+```mermaid
+sequenceDiagram
+    participant UI as React Frontend
+    participant API as FastAPI Backend
+    participant Pre as Preprocessing
+    participant Ext as Extraction Engine
+    participant Models as ML Models
+    participant Store as Results Storage
+    participant Eval as Evaluation System
+
+    Note over UI,Eval: Complete MIA Processing Flow
+
+    UI->>API: 1. Upload transcript file
+    API->>API: 2. Save to uploads directory
+    API->>Pre: 3. Initiate preprocessing
+
+    Note over Pre: Preprocessing Stage
+    Pre->>Pre: 4a. Format detection & parsing
+    Pre->>Pre: 4b. Text cleaning & normalization
+    Pre->>Pre: 4c. Speaker attribution
+    Pre->>Pre: 4d. Semantic segmentation
+    Pre->>API: 5. Cleaned, structured transcript
+
+    API->>Ext: 6. Start extraction pipeline
+    
+    Note over Ext,Models: Parallel Component Extraction
+    par Summary Generation
+        Ext->>Models: 7a. Hierarchical summarization
+        Models-->>Ext: Summary with confidence
+    and Decision Extraction
+        Ext->>Models: 7b. Decision pattern analysis
+        Models-->>Ext: Decisions with provenance
+    and Action Item Detection
+        Ext->>Models: 7c. Task & owner identification
+        Models-->>Ext: Action items with timelines
+    and Risk Identification
+        Ext->>Models: 7d. Risk signal detection
+        Models-->>Ext: Risks with impact assessment
+    end
+
+    Ext->>Ext: 8. Cross-reference validation
+    Ext->>Ext: 9. Confidence aggregation
+    Ext->>Store: 10. Save extraction results
+    
+    Store->>Eval: 11. Trigger evaluation pipeline
+    Eval->>Eval: 12. LLM + traditional metrics
+    Eval->>Store: 13. Save evaluation scores
+    
+    Store-->>API: 14. Complete results with scores
+    API-->>UI: 15. JSON response with all data
+    
+    Note over UI: Frontend Display
+    UI->>UI: 16a. Render extraction results
+    UI->>UI: 16b. Display evaluation dashboard
+    UI->>UI: 16c. Enable human review interface
+```
+
+### Implementation Details
 
 The meeting extraction that appears in the UI is produced through the `MeetingExtractor` pipeline defined in `backend/app/extraction/extractor.py`. The system extracts four main components: **Summary**, **Decisions**, **Action Items**, and **Risks**.
 
