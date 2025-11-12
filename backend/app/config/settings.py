@@ -61,6 +61,9 @@ class Settings(BaseSettings):
     # Set to "local" for testing with local models only
     model_strategy: Literal["local", "remote", "hybrid"] = "local"
     
+    # Decision Extraction Strategy: enhanced for better reasoning, original for compatibility
+    use_enhanced_decisions: bool = True
+    
     # Step-specific model configurations
     # Each step can use a different model type and provider
     models: Dict[str, Dict[str, str]] = {

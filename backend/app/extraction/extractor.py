@@ -12,6 +12,7 @@ from app.preprocessing.cleaner import TranscriptCleaner
 from app.extraction.specialized_extractors import (
     IntentTagger, DecisionExtractor, ActionExtractor, RiskExtractor
 )
+from app.extraction.enhanced_decision_extractor import EnhancedDecisionExtractor
 from app.extraction.provenance import ProvenanceTracker
 from app.extraction.validator import ExtractionValidator
 from app.models.model_manager import model_manager
@@ -340,12 +341,17 @@ Create a 2-3 paragraph professional executive summary that captures all key info
         self.provenance_tracker.set_source_segments(segments, embedding_model)
         
         # Use enhanced specialized extractors that process full context
-        decision_extractor = DecisionExtractor(self.model_adapter, embedding_model)
+        from app.config.settings import settings
+        
+        if settings.use_enhanced_decisions:
+            decision_extractor = EnhancedDecisionExtractor(self.model_adapter, embedding_model)
+            decisions = decision_extractor.extract(segments)
+        else:
+            decision_extractor = DecisionExtractor(self.model_adapter, embedding_model)
+            decisions = decision_extractor.extract([], segments)
+        
         action_extractor = ActionExtractor(self.model_adapter, embedding_model)
         risk_extractor = RiskExtractor(self.model_adapter, embedding_model)
-        
-        # Extract with enhanced extractors - pass empty tagged_sentences to use full context
-        decisions = decision_extractor.extract([], segments)
         action_items = action_extractor.extract([], segments)
         risks = risk_extractor.extract([], segments)
         

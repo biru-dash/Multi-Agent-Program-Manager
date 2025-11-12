@@ -191,7 +191,7 @@ class IntentTagger:
 
 
 class DecisionExtractor:
-    """Enhanced decision extractor with better prompts and context handling."""
+    """Enhanced decision extractor with semantic chunking, reasoning, and thematic grouping."""
     
     DECISION_PROMPT = """You are an expert meeting analyst. Extract DECISIONS from this meeting transcript.
 
