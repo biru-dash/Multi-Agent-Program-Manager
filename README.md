@@ -113,37 +113,48 @@ A multi-agent system for extracting structured insights from meeting transcripts
 
 The meeting summary that appears in the UI is produced entirely in the backend through the `MeetingExtractor` pipeline defined in `backend/app/extraction/extractor.py`. The end-to-end flow is:
 
-1. **Transcript preprocessing** (`backend/app/preprocessing/cleaner.py`): raw segments produced by the transcript parser are cleaned by `TranscriptCleaner.process`, which removes greetings and filler speech, merges rapid-fire turns from the same speaker, normalizes speaker names, and (when embeddings are available) can segment the meeting into topical clusters.
-
+1. **Transcript preprocessing** (`backend/app/preprocessing/cleaner.py`):
+   - `TranscriptCleaner.process` removes greetings, small talk, and filler speech.
+   - Consecutive short turns from the same speaker are merged for better context.
+   - Speaker names are normalized and (optionally) segments are grouped by topic using embeddings.
    ```text
    Before: "Hey everyone, uh yeah just wanted to kick things off... okay so I think launch is October 15."
    After:  "Just wanted to kick things off. I think launch is October 15."
    ```
 
-2. **Hierarchical summarization** (`MeetingExtractor.extract_summary`): the cleaned transcript is chunked into ~500–700 token windows with semantic chunking when an embedding model is present, falling back to word-based chunking if needed. Each chunk is summarized with the configured Hugging Face model via `ModelAdapter.summarize`, and the partial summaries are recursively merged in `_hierarchical_summarize` until a single narrative remains.
-
+2. **Hierarchical summarization** (`MeetingExtractor.extract_summary`):
+   - Cleansed transcript is chunked into ~500–700 token windows using semantic chunking when embeddings are available, otherwise a word-based fallback.
+   - Each chunk is summarized through `ModelAdapter.summarize`.
+   - `_hierarchical_summarize` recursively combines partial summaries into a single narrative.
    ```text
    Before: 1,200-word raw discussion with repeated status updates.
    After:  "The team reviewed launch blockers, confirmed feature readiness, and aligned on timeline adjustments."
    ```
 
-3. **Structured reasoning support** (`MeetingExtractor.extract_structured_data`): decisions, action items, and risks are extracted from the same segments using specialized extractors in `backend/app/extraction/specialized_extractors.py`, with provenance tracking and semantic confidence scoring. These signals inform the executive summary while also powering the structured panes in the UI.
-
+3. **Structured reasoning support** (`MeetingExtractor.extract_structured_data`):
+   - Specialized extractors (decisions, actions, risks) in `backend/app/extraction/specialized_extractors.py` analyze the same segments.
+   - Provenance tracking anchors each item to supporting transcript spans.
+   - Semantic confidence scoring and validation prune low-quality signals and push results to the frontend.
    ```text
    Before: "We’ll push beta two weeks and Alex owns the risk mitigation."
    After:  Decision → "Push beta to Oct 29"; Action → "Alex to drive mitigation plan"; Risk → "Timeline slip if QA fails."
    ```
 
-4. **Executive summary synthesis** (`MeetingExtractor._synthesize_executive_summary`): the initial narrative summary, structured artifacts, and derived metadata (meeting type, duration estimate, main topic) are woven into a polished two to three paragraph executive summary. This stage enforces the final tone and template and re-invokes `ModelAdapter.summarize` with a prompt that calls out required factual elements (dates, metrics, before/after decisions).
-
+4. **Executive summary synthesis** (`MeetingExtractor._synthesize_executive_summary`):
+   - The initial narrative summary, structured artifacts, and derived metadata (meeting type, duration estimate, main topic) are combined.
+   - A templated prompt re-invokes `ModelAdapter.summarize` to ensure required factual elements (dates, metrics, before/after decisions) are present.
+   - Result is a polished two to three paragraph executive summary ready for the UI.
    ```text
    Before: "Discussed launch plan and risk mitigation."
    After:  "The planning session was a 45-minute review of the launch program, confirming the move from Oct 15 to Oct 29, highlighting four critical blockers, and assigning three mitigation owners."
    ```
 
-5. **Quality gating** (`MeetingExtractor.process`): confidence and redundancy metrics are computed, and if extraction quality is insufficient the system falls back to the initial hierarchical summary rather than the synthesized executive version.
+5. **Quality gating** (`MeetingExtractor.process`):
+   - Redundancy, coverage, and confidence metrics are calculated for the synthesized summary.
+   - If thresholds are not met, the system falls back to the hierarchical summary to avoid hallucinated structure.
+   - The UI receives both the final summary and a quality warning flag when confidence is low.
 
-This pipeline ensures that the displayed meeting summary is grounded in the cleaned transcript, preserves quantitative details, and aligns with the structured outputs surfaced elsewhere in the app.
+   This pipeline ensures that the displayed meeting summary is grounded in the cleaned transcript, preserves quantitative details, and aligns with the structured outputs surfaced elsewhere in the app.
 
 ## Model Strategy Options
 
