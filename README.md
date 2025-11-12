@@ -146,6 +146,51 @@ A sophisticated multi-agent system for extracting structured insights from meeti
 - `docs/reports/`: Decision logs, planning outputs, accelerator summaries, and related meeting artifacts.
 - `meeting_transcripts/`: Raw transcript inputs retained separately from curated documentation.
 
+## Architecture Overview
+
+### MIA System Flow
+
+The Meeting Intelligence Agent processes transcripts through a multi-stage pipeline with comprehensive evaluation and human feedback loops:
+
+```mermaid
+graph TB
+    A[📄 Transcript Upload] --> B[🔧 Preprocessing]
+    B --> C[🧠 MIA Extraction Pipeline]
+    C --> D[📊 Results Display]
+    C --> E[🔍 Automated Evaluation]
+    E --> F[📈 LangSmith Logging]
+    E --> G[👤 Human Review]
+    G --> H[🔄 Evaluation Aggregation]
+    H --> F
+    H --> I[📋 Improvement Reports]
+    I --> J[🔄 Model Retraining]
+
+    subgraph "Extraction Components"
+        C1[📝 Summary Generation]
+        C2[⚖️ Decision Extraction]
+        C3[✅ Action Items]
+        C4[⚠️ Risk Identification]
+    end
+    C --> C1
+    C --> C2
+    C --> C3
+    C --> C4
+
+    subgraph "Evaluation Framework"
+        E1[🤖 LLM Judge<br/>Llama3.2]
+        E2[📊 Traditional Metrics<br/>ROUGE, BERTScore]
+        E3[👥 Human Reviewers]
+    end
+    E --> E1
+    E --> E2
+    G --> E3
+
+    style A fill:#e1f5fe
+    style C fill:#f3e5f5
+    style E fill:#fff3e0
+    style F fill:#e8f5e8
+```
+
 ## Usage
 
 1. **Upload a transcript file** (TXT, JSON, or SRT format)
@@ -153,8 +198,10 @@ A sophisticated multi-agent system for extracting structured insights from meeti
    - Model Strategy: Choose local, remote, or hybrid
    - Preprocessing: Choose basic or advanced
 3. **Click "Process"** to start analysis
-4. **View results** in the output panel
-5. **Export results** as JSON or Markdown
+4. **View results** in the output panel with evaluation tabs
+5. **Review quality scores** in the evaluation dashboard
+6. **Provide human feedback** through the review interface
+7. **Export results** as JSON or Markdown
 
 ## Extraction and Evaluation Architecture
 
@@ -433,6 +480,113 @@ EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 
 This architecture ensures that changing model providers requires only configuration updates, with automatic fallback handling and comprehensive error recovery.
 
+## Detailed System Workflows
+
+### Evaluation Pipeline Flow
+
+The evaluation system provides multi-layered quality assessment with automated scoring, human review, and continuous improvement:
+
+```mermaid
+sequenceDiagram
+    participant UI as Frontend UI
+    participant API as FastAPI Backend
+    participant LLM as LLM Evaluator<br/>(Llama3.2)
+    participant DB as Results Storage
+    participant LS as LangSmith
+    participant HR as Human Reviewer
+
+    Note over UI,HR: Evaluation Workflow
+
+    UI->>API: 1. POST /api/evaluation/{job_id}/trigger
+    API->>DB: 2. Load extraction results
+    
+    par Automated Evaluation
+        API->>LLM: 3a. Evaluate Summary (coverage, factuality, clarity)
+        LLM-->>API: 3b. Return scores + explanations
+        API->>LLM: 4a. Evaluate Decisions (specificity, completeness, clarity)
+        LLM-->>API: 4b. Return scores + explanations
+        API->>LLM: 5a. Evaluate Action Items (owner, timeline, clarity, priority)
+        LLM-->>API: 5b. Return scores + explanations
+        API->>LLM: 6a. Evaluate Risks (impact, likelihood, specificity)
+        LLM-->>API: 6b. Return scores + explanations
+    and Traditional Metrics
+        API->>API: 7. Calculate ROUGE scores
+        API->>API: 8. Calculate BERTScore
+        API->>API: 9. Calculate precision/recall
+    end
+
+    API->>API: 10. Aggregate all evaluation scores
+    API->>DB: 11. Save evaluation results
+    API->>LS: 12. Log evaluation to LangSmith
+    API-->>UI: 13. Return evaluation status
+
+    Note over UI,HR: Human Review Process
+
+    UI->>HR: 14. Display Human Review Form
+    HR->>UI: 15. Submit scores + feedback
+    UI->>API: 16. POST /api/evaluation/{job_id}/human-review
+    API->>API: 17. Re-aggregate with human input
+    API->>DB: 18. Update final scores
+    API->>LS: 19. Log updated evaluation
+
+    Note over API,LS: Continuous Improvement
+
+    API->>API: 20. Generate improvement report
+    API->>DB: 21. Flag low-scoring items for retraining
+```
+
+### Human-in-the-Loop Review Process
+
+The human review system enables subject matter experts to provide feedback and improve model performance:
+
+```mermaid
+graph TB
+    A[📋 Extraction Results] --> B[🎯 Automated Evaluation]
+    B --> C{Quality Score<br/>< 7.0?}
+    
+    C -->|Yes| D[🚨 Flagged for<br/>Human Review]
+    C -->|No| E[✅ High Quality<br/>Auto-Approve]
+    
+    D --> F[👤 Human Reviewer<br/>Interface]
+    F --> G[📊 Component Scoring]
+    
+    subgraph "Review Criteria"
+        G1[📝 Summary<br/>• Coverage<br/>• Factuality<br/>• Clarity]
+        G2[⚖️ Decisions<br/>• Specificity<br/>• Completeness<br/>• Clarity]
+        G3[✅ Action Items<br/>• Owner Assignment<br/>• Timeline Clarity<br/>• Priority Accuracy]
+        G4[⚠️ Risks<br/>• Impact Assessment<br/>• Likelihood<br/>• Specificity]
+    end
+    
+    G --> G1
+    G --> G2
+    G --> G3
+    G --> G4
+    
+    G1 --> H[💬 Reviewer Feedback]
+    G2 --> H
+    G3 --> H
+    G4 --> H
+    
+    H --> I{Mark for<br/>Retraining?}
+    I -->|Yes| J[🔄 Retraining Queue]
+    I -->|No| K[📈 Update Scores]
+    
+    K --> L[🔀 Score Aggregation]
+    E --> L
+    
+    L --> M[📊 Final Quality Score]
+    M --> N[📋 Improvement Report]
+    N --> O[📈 LangSmith Dashboard]
+    
+    J --> P[🧠 Model Improvement<br/>Process]
+    P --> Q[🔄 Next Iteration]
+
+    style D fill:#fff3cd
+    style F fill:#d4edda
+    style J fill:#f8d7da
+    style O fill:#e2e3e5
+```
+
 ### API Endpoints for Evaluation
 
 The system provides RESTful API endpoints for evaluation management:
@@ -603,6 +757,256 @@ docker build -t mia-backend ./backend
 - First run may take longer as models are downloaded
 - For best performance with local models, a GPU is recommended
 - Free Hugging Face API tier has rate limits
+
+## LangSmith Integration and Monitoring
+
+LangSmith provides comprehensive observability for the MIA evaluation system, enabling continuous improvement and performance monitoring.
+
+### LangSmith Dashboard Overview
+
+```mermaid
+graph TB
+    subgraph "LangSmith Platform"
+        A[📈 Project Dashboard<br/>mia-evaluations]
+        B[🔍 Run Tracking]
+        C[📊 Performance Analytics]
+        D[🎯 Evaluation Trends]
+        E[💰 Cost Monitoring]
+        F[🚨 Error Detection]
+    end
+
+    subgraph "MIA System Integration"
+        G[🧠 Evaluation Runs]
+        H[📋 Metadata Logging]
+        I[⏱️ Performance Metrics]
+        J[🔄 Feedback Loops]
+    end
+
+    G --> A
+    G --> B
+    H --> C
+    I --> D
+    J --> E
+    
+    A --> K[👁️ Real-time Monitoring]
+    B --> L[🔗 Trace Inspection]
+    C --> M[📈 Trend Analysis]
+    D --> N[🎯 Quality Insights]
+    
+    style A fill:#e3f2fd
+    style K fill:#e8f5e8
+    style M fill:#fff3e0
+    style N fill:#f3e5f5
+```
+
+### Setting Up LangSmith Monitoring
+
+#### 1. **Initial Configuration**
+
+```bash
+# Add to your .env file
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_PROJECT_NAME=mia-evaluations
+
+# Verify connection
+curl -X GET "http://localhost:8000/api/evaluation/model-info"
+```
+
+#### 2. **What Gets Logged to LangSmith**
+
+```mermaid
+graph LR
+    subgraph "Evaluation Data Flow"
+        A[🧠 LLM Evaluations] --> E[📊 LangSmith Run]
+        B[📊 Traditional Metrics] --> E
+        C[👤 Human Reviews] --> E
+        D[🔀 Aggregated Scores] --> E
+    end
+
+    subgraph "LangSmith Run Contains"
+        E --> F[📋 Run Metadata<br/>• Job ID<br/>• Timestamp<br/>• Model Info]
+        E --> G[📊 Input Data<br/>• Original Transcript<br/>• Extraction Results<br/>• Reference Data]
+        E --> H[📈 Output Scores<br/>• Component Scores<br/>• Explanations<br/>• Confidence Levels]
+        E --> I[🏷️ Tags<br/>• mia<br/>• evaluation<br/>• automated]
+    end
+
+    style E fill:#e1f5fe
+    style F fill:#f3e5f5
+    style G fill:#fff3e0
+    style H fill:#e8f5e8
+    style I fill:#fce4ec
+```
+
+### Using LangSmith for Continuous Improvement
+
+#### Performance Monitoring Dashboard
+
+1. **Navigate to LangSmith**: https://smith.langchain.com/
+2. **Select Project**: `mia-evaluations`
+3. **Monitor Key Metrics**:
+
+```mermaid
+graph TB
+    A[🎯 Evaluation Quality Metrics] --> A1[📊 Average Scores by Component]
+    A --> A2[📈 Score Trends Over Time]
+    A --> A3[🎯 Pass/Fail Rate by Threshold]
+    
+    B[⚡ Performance Metrics] --> B1[⏱️ Evaluation Latency]
+    B --> B2[🔄 Throughput (Evaluations/hour)]
+    B --> B3[💰 Cost per Evaluation]
+    
+    C[🔍 Quality Insights] --> C1[📋 Low-Scoring Patterns]
+    C --> C2[🚨 Common Failure Points]
+    C --> C3[💡 Improvement Opportunities]
+    
+    D[🤖 Model Performance] --> D1[🎯 LLM vs Human Agreement]
+    D --> D2[📊 Confidence Calibration]
+    D --> D3[🔄 Model Drift Detection]
+
+    style A fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e1f5fe
+```
+
+#### Identifying Improvement Opportunities
+
+**Step-by-Step Analysis Process:**
+
+1. **Filter by Low Scores**:
+   ```
+   LangSmith Filter: aggregate_score < 6.0
+   ```
+
+2. **Analyze Patterns**:
+   - Which components consistently score low?
+   - Are there specific meeting types with issues?
+   - Do certain topics perform worse?
+
+3. **Review LLM Explanations**:
+   ```json
+   {
+     "explanations": {
+       "coverage": "Summary misses key decisions discussed in minutes 15-20",
+       "factuality": "Incorrect attribution of action item to wrong person"
+     }
+   }
+   ```
+
+4. **Cross-Reference with Human Reviews**:
+   ```mermaid
+   graph LR
+       A[🤖 LLM Score: 5.2] --> C[❓ Disagreement Analysis]
+       B[👤 Human Score: 8.1] --> C
+       C --> D[🔍 Root Cause Investigation]
+       D --> E[🛠️ Prompt Refinement]
+       D --> F[📊 Model Retraining]
+       D --> G[📋 Process Improvement]
+   ```
+
+### Advanced LangSmith Features for MIA
+
+#### Custom Evaluations and A/B Testing
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant LS as LangSmith
+    participant MIA as MIA System
+    participant Users as End Users
+
+    Note over Dev,Users: A/B Testing Workflow
+
+    Dev->>LS: 1. Create evaluation dataset
+    Dev->>LS: 2. Define custom evaluators
+    Dev->>MIA: 3. Deploy model variant A
+    Users->>MIA: 4. Process transcripts (variant A)
+    MIA->>LS: 5. Log results with tags=["variant_a"]
+    
+    Dev->>MIA: 6. Deploy model variant B
+    Users->>MIA: 7. Process transcripts (variant B)
+    MIA->>LS: 8. Log results with tags=["variant_b"]
+    
+    Dev->>LS: 9. Compare variant performance
+    LS-->>Dev: 10. Statistical significance results
+    Dev->>MIA: 11. Deploy winning variant
+```
+
+#### Setting Up Custom Evaluations
+
+1. **Create Evaluation Dataset**:
+   ```python
+   # In LangSmith UI or via API
+   evaluation_dataset = {
+       "name": "mia-golden-set",
+       "examples": [
+           {
+               "transcript": "Meeting transcript...",
+               "expected_summary": "Gold standard summary...",
+               "expected_decisions": [...]
+           }
+       ]
+   }
+   ```
+
+2. **Monitor Model Performance**:
+   ```bash
+   # Trigger batch evaluation
+   curl -X POST "http://localhost:8000/api/evaluation/batch" \
+     -H "Content-Type: application/json" \
+     -d '{"job_ids": ["job1", "job2", "job3"], "parallel": true}'
+   ```
+
+### Cost Optimization with LangSmith
+
+```mermaid
+graph TB
+    A[💰 Cost Monitoring] --> B[📊 Usage Analytics]
+    B --> C[🎯 Optimization Strategies]
+    
+    subgraph "Cost Components"
+        D[🤖 LLM Evaluation Calls]
+        E[📊 Traditional Metrics]
+        F[💾 Storage Costs]
+        G[🔄 API Requests]
+    end
+    
+    B --> D
+    B --> E
+    B --> F
+    B --> G
+    
+    C --> H[⚡ Smart Caching<br/>Skip duplicate evaluations]
+    C --> I[🎯 Selective Evaluation<br/>Focus on low-confidence items]
+    C --> J[📊 Batch Processing<br/>Reduce API overhead]
+    C --> K[🔄 Model Fallbacks<br/>Use cheaper models when appropriate]
+    
+    style A fill:#fff3cd
+    style H fill:#d4edda
+    style I fill:#d4edda
+    style J fill:#d4edda
+    style K fill:#d4edda
+```
+
+### Troubleshooting LangSmith Integration
+
+#### Common Issues and Solutions
+
+| Issue | Symptoms | Solution |
+|-------|----------|----------|
+| 🚫 No data in dashboard | Empty project view | Check API key configuration and network connectivity |
+| ⚠️ Incomplete runs | Missing evaluation data | Verify all evaluation components are completing successfully |
+| 💰 High costs | Unexpected billing | Enable caching and implement selective evaluation |
+| 🐌 Slow performance | Long evaluation times | Use batch processing and parallel evaluation |
+
+#### Monitoring Checklist
+
+- [ ] ✅ Evaluation runs appearing in dashboard
+- [ ] 📊 All metadata fields populated correctly  
+- [ ] 🎯 Quality scores within expected ranges
+- [ ] 💰 Cost tracking enabled and monitored
+- [ ] 🚨 Error alerts configured for failed evaluations
+- [ ] 📈 Weekly performance review scheduled
 
 ## License
 
