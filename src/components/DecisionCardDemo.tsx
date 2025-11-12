@@ -159,23 +159,20 @@ export const DecisionCardDemo = () => {
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">Enhanced Decision Cards - Demo</h2>
         <p className="text-muted-foreground mb-6">
-          This demonstrates the new enhanced UI for Key Decisions with attribution, timestamps, 
-          categorization, and user feedback features.
+          This demonstrates the streamlined Key Decisions UI with attribution, provenance context, 
+          quantitative callouts, and confidence ordering.
         </p>
         
         <div className="space-y-6">
           <h3 className="text-lg font-semibold">Features Showcased:</h3>
           <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-            <li>🔢 <strong>Decision numbering</strong> - Clear visual order with numbered decision cards</li>
-            <li>⏰ <strong>Timeline sorting</strong> - Sort decisions chronologically by when they were made</li>
-            <li>🎯 <strong>Confidence sorting</strong> - Sort decisions by model confidence level</li>
+            <li>🎯 <strong>Confidence ordering</strong> - Highest-confidence decisions surface first</li>
             <li>🏷️ <strong>Category-based color coding</strong> - Visual distinction for timeline, features, budget, etc. (hides "other")</li>
             <li>👤 <strong>Attribution tracking</strong> - Shows who made the decision and when</li>
             <li>🔍 <strong>Confidence indicators</strong> - Shows explicit vs implicit decisions</li>
-            <li>📝 <strong>Supporting context</strong> - Collapsible details with source statements</li>
-            <li>🔗 <strong>Source traceability</strong> - Links to original transcript segments</li>
-            <li>💬 <strong>User feedback system</strong> - Rate accuracy, structure, and usefulness</li>
-            <li>🧹 <strong>Clean interface</strong> - Removes redundant "decision" text and unnecessary details</li>
+            <li>📝 <strong>Supporting context</strong> - Inline rationale snippets without extra clicks</li>
+            <li>🔗 <strong>Source traceability</strong> - Key source excerpts surfaced alongside each decision</li>
+            <li>🧹 <strong>Clean interface</strong> - Single-card layout keeps all decisions together</li>
           </ul>
         </div>
       </Card>
@@ -209,10 +206,10 @@ export const DecisionCardDemo = () => {
           <div>
             <h4 className="font-medium mb-2">Functional Improvements:</h4>
             <ul className="space-y-1 text-muted-foreground">
-              <li>• Collapsible sections to reduce cognitive load</li>
+              <li>• Confidence-first ordering to highlight critical decisions</li>
               <li>• Attribution bar for accountability</li>
               <li>• Source traceability for verification</li>
-              <li>• Feedback system for continuous improvement</li>
+              <li>• Inline supporting statements for quick validation</li>
             </ul>
           </div>
         </div>

@@ -1,7 +1,7 @@
 """Configuration settings for the MIA application."""
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
-from typing import Literal, Dict
+from typing import Literal, Dict, Optional
 from pathlib import Path
 import os
 
@@ -56,6 +56,22 @@ class Settings(BaseSettings):
     
     # Hugging Face Configuration - explicitly map HUGGINGFACE_TOKEN env var
     huggingface_token: str = Field(..., env="HUGGINGFACE_TOKEN")
+    
+    # LangSmith Configuration
+    langsmith_api_key: Optional[str] = Field(default=None, env="LANGSMITH_API_KEY")
+    langsmith_project_name: Optional[str] = Field(default="mia-evaluations", env="LANGSMITH_PROJECT_NAME")
+    
+    # OpenAI Configuration (for evaluation)
+    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
+    
+    # Evaluation Model Configuration
+    evaluation_model_provider: str = Field(default="ollama", env="EVALUATION_MODEL_PROVIDER")  # ollama, openai, huggingface
+    evaluation_model_name: str = Field(default="llama3.2", env="EVALUATION_MODEL_NAME")
+    evaluation_model_fallback: str = Field(default="llama3", env="EVALUATION_MODEL_FALLBACK")
+    evaluation_temperature: float = Field(default=0.1, env="EVALUATION_TEMPERATURE")
+    
+    # Ollama Configuration
+    ollama_base_url: str = Field(default="http://localhost:11434", env="OLLAMA_BASE_URL")
     
     # Model Strategy: local, remote, or hybrid
     # Set to "local" for testing with local models only

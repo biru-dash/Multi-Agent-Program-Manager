@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Evaluation criteria for Meeting Intelligence Agent outputs",
+  "components": {
+    "summary": {
+      "criteria": ["coverage", "factuality", "clarity"],
+      "weights": {
+        "coverage": 0.4,
+        "factuality": 0.4,
+        "clarity": 0.2
+      },
+      "descriptions": {
+        "coverage": "How comprehensively the summary covers key discussion points",
+        "factuality": "How accurately the summary reflects the actual conversation",
+        "clarity": "How clear and understandable the summary is"
+      }
+    },
+    "decisions": {
+      "criteria": ["specificity", "completeness", "clarity"],
+      "weights": {
+        "specificity": 0.35,
+        "completeness": 0.35,
+        "clarity": 0.3
+      },
+      "descriptions": {
+        "specificity": "How specific and actionable the decisions are",
+        "completeness": "Whether all key decisions are captured",
+        "clarity": "How clearly the decisions are articulated"
+      }
+    },
+    "action_items": {
+      "criteria": ["owner", "timeline", "clarity", "priority"],
+      "weights": {
+        "owner": 0.25,
+        "timeline": 0.25,
+        "clarity": 0.25,
+        "priority": 0.25
+      },
+      "descriptions": {
+        "owner": "Whether action items have clear ownership assigned",
+        "timeline": "Whether action items have clear timelines",
+        "clarity": "How clear and specific the action item descriptions are",
+        "priority": "Whether priorities are appropriately assigned"
+      }
+    },
+    "risks": {
+      "criteria": ["impact", "likelihood", "specificity"],
+      "weights": {
+        "impact": 0.35,
+        "likelihood": 0.3,
+        "specificity": 0.35
+      },
+      "descriptions": {
+        "impact": "Whether the potential impact of risks is clearly described",
+        "likelihood": "Whether the likelihood of risks is assessed",
+        "specificity": "How specific and detailed the risk descriptions are"
+      }
+    }
+  },
+  "scoring": {
+    "scale": {
+      "min": 0,
+      "max": 10,
+      "levels": {
+        "0-2": "Poor",
+        "3-4": "Below Average",
+        "5-6": "Average",
+        "7-8": "Good",
+        "9-10": "Excellent"
+      }
+    },
+    "thresholds": {
+      "pass": 6,
+      "warning": 5,
+      "fail": 4
+    }
+  },
+  "metadata_requirements": {
+    "judge_model": "Model used for evaluation",
+    "prompt_version": "Version of evaluation prompts used",
+    "timestamp": "ISO timestamp of evaluation",
+    "transcript_id": "ID of evaluated transcript",
+    "model_version": "Version of MIA model being evaluated"
+  }
+}

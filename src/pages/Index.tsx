@@ -384,7 +384,7 @@ const Index = () => {
             <Card className="border-border bg-card/50 backdrop-blur-sm">
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-foreground mb-4">Meeting Intelligence Results</h2>
-                <MIAOutput output={miaOutput} processedTranscriptFilename={processedTranscriptFilename} />
+                <MIAOutput output={miaOutput} processedTranscriptFilename={processedTranscriptFilename} jobId={currentJobId} />
               </div>
             </Card>
           </div>
