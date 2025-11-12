@@ -2,7 +2,10 @@
 import json
 import requests
 from typing import List, Dict, Any, Optional
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    SentenceTransformer = None
 import logging
 
 logger = logging.getLogger(__name__)
@@ -122,20 +125,25 @@ Start your response with {{ and end with }}.
             
             if start_idx == -1 or end_idx == -1:
                 logger.warning("No JSON found in response")
+                print(f"[DEBUG] OllamaAdapter: No JSON found in response: {response_text[:200]}...")
                 return {}
             
             json_str = response_text[start_idx:end_idx + 1]
             
             # Parse JSON
             result = json.loads(json_str)
+            print(f"[DEBUG] OllamaAdapter: Successfully parsed JSON: {result}")
             return result
             
         except json.JSONDecodeError as e:
             logger.error(f"JSON parsing error: {e}")
             logger.error(f"Response text: {response_text}")
+            print(f"[DEBUG] OllamaAdapter: JSON parse error: {e}")
+            print(f"[DEBUG] OllamaAdapter: Attempted to parse: {json_str[:200] if 'json_str' in locals() else 'N/A'}...")
             return {}
         except Exception as e:
             logger.error(f"Error parsing response: {e}")
+            print(f"[DEBUG] OllamaAdapter: Error parsing response: {e}")
             return {}
     
     def summarize(self, text: str, max_length: int = 250, min_length: int = 100) -> str:
@@ -199,6 +207,9 @@ JSON:"""
         """Get sentence transformer model for embeddings."""
         if self._embedding_model is None:
             try:
+                if SentenceTransformer is None:
+                    logger.error("SentenceTransformer not available")
+                    return None
                 self._embedding_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
             except Exception as e:
                 logger.error(f"Failed to load embedding model: {e}")

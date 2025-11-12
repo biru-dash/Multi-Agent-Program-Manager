@@ -3,7 +3,11 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 import os
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError as e:
+    print(f"Warning: sentence-transformers import failed: {e}")
+    SentenceTransformer = None
 import requests
 from huggingface_hub import InferenceClient
 from app.config.settings import settings
@@ -314,6 +318,10 @@ class LocalTransformerAdapter(ModelAdapter):
             else:
                 device = 'cpu'
             
+            if SentenceTransformer is None:
+                print("Warning: sentence-transformers not available, skipping embedding model")
+                self._embedding_model = None
+                return None
             self._embedding_model = SentenceTransformer(
                 settings.embedding_model,
                 cache_folder=cache_dir,
@@ -372,6 +380,10 @@ class HybridAdapter(ModelAdapter):
             else:
                 device = 'cpu'
             
+            if SentenceTransformer is None:
+                print("Warning: sentence-transformers not available, skipping embedding model")
+                self._embedding_model = None
+                return None
             self._embedding_model = SentenceTransformer(
                 settings.embedding_model,
                 cache_folder=cache_dir,

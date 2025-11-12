@@ -196,27 +196,37 @@ class DecisionExtractor:
     DECISION_PROMPT = """You are an expert meeting analyst. Extract DECISIONS from this meeting transcript.
 
 A DECISION is when participants:
-- Agree on a course of action ("we decided to...")
-- Make a choice between options ("we chose...")
-- Approve something ("approved the plan...")
-- Conclude or finalize something ("we concluded that...")
-- Set policy or direction ("we will...")
+- Agree on a course of action with specific outcomes
+- Make a choice between options with clear results
+- Approve something with concrete details
+- Set dates, deadlines, or quantitative targets
+- Finalize scope, features, or deliverables
 
-EXAMPLES of decisions:
-✅ "We decided to push the launch date from October 15th to October 29th"
-✅ "We agreed to cut the custom branding feature"
-✅ "The team approved moving forward with the security audit"
-✅ "We concluded that we need 2-week buffers between phases"
-✅ "Let's make October 29th our new launch date"
-✅ "We're going with the hybrid approach"
+EXAMPLES of decisions with quantitative details:
+✅ "We decided to push the launch date from October 15th to October 29th" 
+   → Decision includes specific before/after dates
+✅ "We agreed to finalize the feature set to 10 core features and cut 4 nice-to-haves"
+   → Decision includes specific numbers
+✅ "The team approved increasing the buffer from 1 week to 2 weeks between phases"
+   → Decision shows quantitative change
+✅ "We're capping the beta at 100 users instead of 500"
+   → Decision includes specific limits
+✅ "Let's establish weekly checkpoints every Monday at 10 AM"
+   → Decision includes specific schedule
+✅ "We decided to allocate $50K from contingency to cover the security audit"
+   → Decision includes budget numbers
 
 ❌ NOT decisions (just discussion):
 - "What do you think about the timeline?"
 - "We should consider the risks"
-- "Let me check with legal"
+- "Let me check the numbers"
 - "I'm wondering if we should..."
 
-Extract ALL clear decisions from this meeting transcript:
+Extract ALL clear decisions from this meeting transcript, especially those with:
+- Specific dates or deadlines
+- Numbers, counts, or percentages
+- Before/after changes
+- Concrete deliverables or scope
 
 {context}
 
@@ -224,15 +234,20 @@ Return decisions in this EXACT JSON format:
 {{
   "decisions": [
     {{
-      "decision": "exact decision made (what was decided)",
+      "decision": "exact decision made including specific details and numbers",
       "rationale": "why this decision was made (if mentioned)",
       "participants": ["names of people involved in decision"],
+      "quantitative_data": {{
+        "dates": ["any dates mentioned"],
+        "numbers": ["any counts, amounts, or metrics"],
+        "changes": ["any before/after comparisons"]
+      }},
       "confidence": 0.9
     }}
   ]
 }}
 
-Focus on WHAT was decided, not discussions about what might be decided.
+Prioritize decisions with concrete, measurable outcomes.
 Return ONLY valid JSON, no explanations."""
 
     def __init__(self, model_adapter: ModelAdapter, embedding_model=None):
@@ -400,35 +415,49 @@ class ActionExtractor:
     ACTION_PROMPT = """You are an expert meeting analyst. Extract ACTION ITEMS from this meeting transcript.
 
 An ACTION ITEM is a specific task assigned to someone with:
-- WHO: Clear owner/assignee
+- WHO: Clear owner/assignee (actual person's name)
 - WHAT: Specific action to take
 - WHEN: Due date/deadline (if mentioned)
+- WHY: Context or dependency (if relevant)
 
-EXAMPLES of action items:
-✅ "Sarah, can you contact the Salesforce account manager by end of day tomorrow?"
-   → Owner: Sarah, Action: contact Salesforce account manager, Due: end of day tomorrow
+EXAMPLES of well-extracted action items:
+✅ "Alex, work on getting expedited support from the Salesforce team by Friday"
+   → Owner: Alex, Action: get expedited support from Salesforce team, Due: Friday
 
-✅ "Marcus will schedule knowledge transfer sessions with James this week"
-   → Owner: Marcus, Action: schedule knowledge transfer sessions with James, Due: this week
+✅ "Sarah will send an email to Mike Hendricks and CC the team regarding the support request"
+   → Owner: Sarah, Action: send email to Mike Hendricks and CC team regarding support request
 
-✅ "Emily needs to update all marketing materials with the new launch date"
-   → Owner: Emily, Action: update all marketing materials with new launch date
+✅ "Marcus needs to escalate to internal security team lead and get quotes from external auditors"
+   → Owner: Marcus, Action: escalate to internal security team lead and get quotes from external auditors
 
-✅ "I'll coordinate with finance on the security audit budget"
-   → Owner: [current speaker], Action: coordinate with finance on security audit budget
+✅ "I'll set up a meeting with finance for budget implications" (Speaker: Sarah)
+   → Owner: Sarah, Action: set up meeting with finance for budget implications
 
-✅ "Let's have David send the calendar invites for weekly meetings"
-   → Owner: David, Action: send calendar invites for weekly meetings
+✅ "Emily to finalize competitive analysis by October 20th"
+   → Owner: Emily, Action: finalize competitive analysis, Due: October 20th
 
-OWNERSHIP PATTERNS:
-- "John will..." → Owner: John
-- "Sarah, can you..." → Owner: Sarah
-- "I'll handle..." → Owner: [current speaker]
-- "Let's have Marcus..." → Owner: Marcus
-- "assigned to Emily" → Owner: Emily
-- "Emily - update the..." → Owner: Emily
+OWNERSHIP PATTERNS to detect:
+- "[Name] will/should/needs to..." → Owner: [Name]
+- "[Name], can you..." → Owner: [Name]
+- "I'll/I will/I'm going to..." → Owner: [current speaker]
+- "Let's have [Name]..." → Owner: [Name]
+- "assigned to [Name]" → Owner: [Name]
+- "[Name] - [action]" → Owner: [Name]
+- "[Name] to [action]" → Owner: [Name]
 
-Extract ALL action items from this meeting transcript:
+DEADLINE PATTERNS:
+- "by [date/day]"
+- "before [event]"
+- "end of day/EOD"
+- "this/next week"
+- "ASAP/immediately"
+- "within [timeframe]"
+
+Extract ALL action items from this meeting, including:
+- Tasks explicitly assigned to individuals
+- Commitments made by speakers ("I'll...")
+- Follow-up items mentioned
+- Deliverables with owners
 
 {context}
 
@@ -436,16 +465,17 @@ Return in this EXACT JSON format:
 {{
   "action_items": [
     {{
-      "action": "specific task to be done",
-      "owner": "person responsible (use actual names from transcript)",
-      "due_date": "deadline if mentioned (or null if not specified)",
-      "priority": "high/medium/low based on urgency words",
+      "action": "specific task description",
+      "owner": "person's actual name (not pronouns or roles)",
+      "due_date": "specific deadline or timeframe (null if not mentioned)",
+      "priority": "high/medium/low based on urgency",
+      "dependencies": "related tasks or blockers if mentioned",
       "confidence": 0.9
     }}
   ]
 }}
 
-FOCUS on clear task assignments, not vague discussions.
+Extract EVERY clear task assignment. Include all names mentioned.
 Return ONLY valid JSON, no explanations."""
 
     def __init__(self, model_adapter: ModelAdapter, embedding_model=None):
@@ -456,28 +486,55 @@ Return ONLY valid JSON, no explanations."""
     def extract(self, tagged_sentences: List[IntentTag], all_segments: List[TranscriptSegment]) -> List[Dict[str, Any]]:
         """Extract action items with enhanced owner detection."""
         
+        print(f"[DEBUG] ActionExtractor.extract: Starting extraction with {len(all_segments)} segments")
+        print(f"[DEBUG] ActionExtractor.extract: Model adapter type: {type(self.model_adapter).__name__}")
+        print(f"[DEBUG] ActionExtractor.extract: Has extract_structured_data: {hasattr(self.model_adapter, 'extract_structured_data')}")
+        
         # Check if this is an Ollama adapter (supports structured prompts)
         if hasattr(self.model_adapter, 'extract_structured_data'):
-            return self._extract_with_llm(all_segments)
+            print(f"[DEBUG] ActionExtractor.extract: Using LLM extraction")
+            result = self._extract_with_llm(all_segments)
+            print(f"[DEBUG] ActionExtractor.extract: LLM extraction returned {len(result)} items")
+            return result
         else:
-            return self._extract_with_patterns(all_segments)
+            print(f"[DEBUG] ActionExtractor.extract: Using pattern matching")
+            result = self._extract_with_patterns(all_segments)
+            print(f"[DEBUG] ActionExtractor.extract: Pattern matching returned {len(result)} items")
+            return result
     
     def _extract_with_llm(self, all_segments: List[TranscriptSegment]) -> List[Dict[str, Any]]:
         """Extract action items using LLM structured prompts (for Ollama)."""
         context = self._build_extraction_context(all_segments)
         
+        print(f"[DEBUG] ActionExtractor: Using LLM extraction with context length: {len(context)}")
+        print(f"[DEBUG] ActionExtractor: First 500 chars of context: {context[:500]}...")
+        
         try:
             response = self.model_adapter.extract_structured_data(
                 self.ACTION_PROMPT.format(context=context)
             )
-            return response.get("action_items", [])
+            print(f"[DEBUG] ActionExtractor: LLM response: {response}")
+            action_items = response.get("action_items", [])
+            
+            # Ensure all action items have confidence values
+            for action in action_items:
+                if "confidence" not in action:
+                    action["confidence"] = 0.9  # Default high confidence for Ollama extractions
+                if "priority" not in action:
+                    action["priority"] = "medium"  # Default priority
+            
+            print(f"[DEBUG] ActionExtractor: Found {len(action_items)} action items")
+            return action_items
         except Exception as e:
-            print(f"LLM extraction failed: {e}, falling back to pattern matching")
+            print(f"[ERROR] ActionExtractor: LLM extraction failed: {e}, falling back to pattern matching")
+            import traceback
+            traceback.print_exc()
             return self._extract_with_patterns(all_segments)
     
     def _extract_with_patterns(self, all_segments: List[TranscriptSegment]) -> List[Dict[str, Any]]:
         """Extract action items using pattern matching (fallback)."""
         
+        print(f"[DEBUG] ActionExtractor: Using pattern matching fallback with {len(all_segments)} segments")
         action_items = []
         seen_actions = set()
         
@@ -638,35 +695,50 @@ class RiskExtractor:
     RISK_PROMPT = """You are an expert meeting analyst. Extract RISKS from this meeting transcript.
 
 A RISK is a potential problem, concern, or threat that could impact the project:
-- Things that could go wrong
-- Blockers or dependencies
+- Things that could go wrong or are already problematic
+- Blockers, dependencies, or constraints
 - Concerns raised by participants
-- Potential failures or delays
+- Potential failures, delays, or resource issues
 
-EXAMPLES of risks:
-✅ "Security audit delay could impact launch timeline"
-   → Category: Timeline, Risk: Security audit delay impacting launch
+EXAMPLES of well-extracted risks with details:
+✅ "Security audit delay could push launch by 2 weeks"
+   → Risk: Security audit delay could push launch by 2 weeks
+   → Category: Timeline, Impact: High, Timeline Impact: 2 weeks
 
-✅ "Key engineer taking paternity leave during launch window"
-   → Category: Resource, Risk: Key person dependency during critical period
+✅ "Performance degradation when handling datasets over 10GB"
+   → Risk: Performance degradation with large datasets (>10GB)
+   → Category: Technical, Impact: High, Technical Details: 10GB threshold
 
-✅ "Performance issues not resolved before launch"
-   → Category: Technical, Risk: Unresolved performance issues
+✅ "Marcus taking paternity leave from Oct 15-29, right during launch"
+   → Risk: Key engineer unavailable during launch window (Oct 15-29)
+   → Category: Resource, Impact: High, Owner: Marcus
 
-✅ "Budget constraints may require cutting more features"
-   → Category: Resource, Risk: Budget overrun forcing feature cuts
+✅ "Only 3 yellow flags but could turn red if not addressed by Friday"
+   → Risk: 3 yellow status flags could escalate to red by Friday
+   → Category: Timeline, Impact: Medium, Deadline: Friday
 
-✅ "If we can't get Salesforce integration working, enterprise customers won't be happy"
-   → Category: Technical, Risk: Salesforce integration affecting enterprise customers
+✅ "Need expedited Salesforce support or enterprise features will be blocked"
+   → Risk: Salesforce integration blocking enterprise features without expedited support
+   → Category: Technical, Impact: High, Dependency: Salesforce
 
 RISK CATEGORIES:
-- Timeline: delays, schedule issues, deadline conflicts
-- Technical: performance, bugs, integration problems, system issues
-- Resource: staffing, budget, capacity, key person dependencies
-- Regulatory: compliance, legal issues, audit requirements
-- Business: market, customer, competitive, stakeholder concerns
+- Timeline: delays, schedule conflicts, deadline risks
+- Technical: performance, bugs, integration issues, data problems
+- Resource: staffing gaps, budget constraints, key person dependencies
+- Regulatory: compliance, legal, audit, security requirements
+- Business: market risks, customer impact, competitive threats
 
-Extract ALL risks from this meeting transcript:
+IMPACT LEVELS:
+- High: Could block launch or major features
+- Medium: Could cause delays or quality issues
+- Low: Minor concerns that can be managed
+
+Extract ALL risks from this meeting, including:
+- Specific problems mentioned (with numbers/dates if available)
+- Dependencies that could fail
+- Resource constraints
+- Technical issues
+- Timeline pressures
 
 {context}
 
@@ -674,15 +746,19 @@ Return in this EXACT JSON format:
 {{
   "risks": [
     {{
-      "risk": "clear description of the risk/concern (not a quote)",
+      "risk": "clear, specific description of the risk with details",
       "category": "Timeline/Technical/Resource/Regulatory/Business",
-      "mentioned_by": "speaker who raised the concern",
+      "impact": "High/Medium/Low",
+      "mentioned_by": "person who raised it",
+      "mitigation": "any mitigation plan mentioned (null if none)",
+      "owner": "person assigned to handle it (null if none)",
+      "deadline": "when this needs resolution (null if not specified)",
       "confidence": 0.9
     }}
   ]
 }}
 
-Focus on POTENTIAL PROBLEMS that could impact the project, not general discussion.
+Include ALL concrete risks with specific details. Capture numbers, dates, and thresholds.
 Return ONLY valid JSON, no explanations."""
 
     def __init__(self, model_adapter: ModelAdapter, embedding_model=None):

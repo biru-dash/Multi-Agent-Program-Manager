@@ -1,4 +1,5 @@
-import { Settings, ChevronDown, Zap, Brain, Sliders } from 'lucide-react';
+import { Settings, ChevronDown, Zap, Brain, Sliders, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -25,16 +26,27 @@ interface ConfigPanelProps {
 
 export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
   const isOllama = config.modelStrategy === 'ollama';
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="border-border bg-card/50 backdrop-blur-sm">
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-6">
-          <Settings className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold text-foreground">Agent Configuration</h3>
-        </div>
-
-        <div className="space-y-6">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card className="border-border bg-card/50 backdrop-blur-sm">
+        <CollapsibleTrigger className="w-full p-4 text-left hover:bg-accent/5 transition-colors">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Settings className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold text-foreground">Agent Configuration</h3>
+            </div>
+            {isOpen ? (
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            )}
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="px-4 pb-4">
+            <div className="space-y-6">
           {/* Model Strategy Selection */}
           <div className="space-y-2">
             <Label htmlFor="model-strategy" className="text-sm font-medium text-foreground">
@@ -50,7 +62,7 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
-                <SelectItem value="ollama">🚀 Ollama (Llama 3) - Enhanced Quality</SelectItem>
+                <SelectItem value="ollama">Ollama (Llama 3) - Enhanced Quality</SelectItem>
                 <SelectItem value="hybrid">Hybrid (API + Local Fallback)</SelectItem>
                 <SelectItem value="local">Local Models Only (Testing)</SelectItem>
                 <SelectItem value="remote">HuggingFace API Only</SelectItem>
@@ -61,7 +73,7 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
             </p>
             {isOllama && (
               <div className="mt-2 p-2 bg-primary/10 rounded-md border border-primary/20">
-                <p className="text-xs text-primary font-medium">🚀 Ollama Mode Active - Advanced parameters available below</p>
+                <p className="text-xs text-primary font-medium">Ollama Mode Active - Advanced parameters available below</p>
               </div>
             )}
           </div>
@@ -234,9 +246,9 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border-border">
-                      <SelectItem value="comprehensive">🎯 Comprehensive (Most thorough)</SelectItem>
-                      <SelectItem value="focused">⚡ Focused (Faster, key items)</SelectItem>
-                      <SelectItem value="creative">🧠 Creative (Finds subtle patterns)</SelectItem>
+                      <SelectItem value="comprehensive">Comprehensive (Most thorough)</SelectItem>
+                      <SelectItem value="focused">Focused (Faster, key items)</SelectItem>
+                      <SelectItem value="creative">Creative (Finds subtle patterns)</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
@@ -291,15 +303,17 @@ export const ConfigPanel = ({ config, onConfigChange }: ConfigPanelProps) => {
             </div>
           )}
 
-          {/* Status Summary */}
-          <div className="pt-4 border-t border-border">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Config Status</span>
-              <span className="text-success font-medium">Ready</span>
+              {/* Status Summary */}
+              <div className="pt-4 border-t border-border">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Config Status</span>
+                  <span className="text-success font-medium">Ready</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </Card>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 };

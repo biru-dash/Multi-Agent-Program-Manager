@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { TranscriptSelector } from '@/components/TranscriptSelector';
 import { ConfigPanel } from '@/components/ConfigPanel';
+import { PriorRunsPanel } from '@/components/PriorRunsPanel';
 import { WorkflowCanvas } from '@/components/WorkflowCanvas';
 import { MIAOutput } from '@/components/MIAOutput';
 import { ExportButtons } from '@/components/ExportButtons';
@@ -16,7 +17,7 @@ import { miaService, type MIAResults } from '@/services/miaService';
 
 const Index = () => {
   const [config, setConfig] = useState<AgentConfig>({
-    modelStrategy: 'local', // Changed to 'local' for testing local models
+    modelStrategy: 'ollama', // Default to Ollama for enhanced quality
     preprocessing: 'advanced',
     confidenceThreshold: 75,
     outputFormat: 'json' as 'json' | 'markdown',
@@ -275,6 +276,13 @@ const Index = () => {
     setLogs([]);
   };
 
+  const handlePriorResultLoaded = (result: MIAResults, filename: string) => {
+    setMiaOutput(result);
+    setProcessedTranscriptFilename(filename);
+    addLog('success', `Loaded prior results from ${filename}`);
+    toast.success(`Loaded results from ${filename}`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -319,6 +327,7 @@ const Index = () => {
           {/* Left Sidebar - Config */}
           <div className="col-span-3 space-y-6">
             <ConfigPanel config={config} onConfigChange={setConfig} />
+            <PriorRunsPanel onResultLoaded={handlePriorResultLoaded} />
             <Card className="p-4 border-border bg-card/50">
               <Tabs defaultValue="folder" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-4">

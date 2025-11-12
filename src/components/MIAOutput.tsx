@@ -158,7 +158,7 @@ export const MIAOutput = ({ output, processedTranscriptFilename }: MIAOutputProp
                     {action.owner && <span>Owner: {action.owner}</span>}
                     {action.due_date && <span>• Due: {action.due_date}</span>}
                     <Badge variant={confidence.variant} className="text-xs">
-                      {action.priority.toUpperCase()} • {confidence.label}
+                      {(action.priority || 'medium').toUpperCase()} • {confidence.label}
                     </Badge>
                   </div>
                 </div>

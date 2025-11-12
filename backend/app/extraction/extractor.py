@@ -165,16 +165,28 @@ class MeetingExtractor:
         # Final meta-summarization
         try:
             # Create a more structured summary prompt
-            summary_prompt = f"""Summarize this meeting discussion. Focus on:
-1. Main topics discussed
-2. Key decisions made
-3. Action items assigned
-4. Risks or concerns identified
+            summary_prompt = f"""Create a comprehensive meeting summary with this structure:
+
+OPENING: Start with "[Meeting duration]-minute [meeting type] session focused on [main topic]". Estimate duration from discussion length and meeting type from content.
+
+KEY OUTCOMES: In one paragraph, list the most important decisions and changes, including:
+- Specific dates and deadlines mentioned
+- Quantitative metrics (counts, numbers, percentages)
+- Major decisions with before/after states (e.g., "pushed launch from X to Y")
+- Final determinations on features or scope
+
+MEETING COVERAGE: Summarize what was discussed in detail:
+- Current status reviews with specific issues or flags mentioned
+- Feature decisions with specific counts (e.g., "10 core features, cut 4")
+- Strategy discussions and approaches chosen
+- Risk assessments with categories and priorities
+- Action item assignments with owners and deadlines
+- Dependencies and contingency planning
 
 Meeting discussion:
 {combined_summary_text}
 
-Provide a concise but comprehensive summary:"""
+Create a 2-3 paragraph professional executive summary that captures all key information:"""
             
             summary = self.model_adapter.summarize(
                 summary_prompt if len(combined_summary_text) < 2000 else combined_summary_text,
@@ -227,7 +239,7 @@ Provide a concise but comprehensive summary:"""
         """Calculate confidence using semantic similarity to summary."""
         embedding_model = self._get_embedding_model()
         if not embedding_model or self._summary_embedding is None:
-            # Fallback to keyword-based confidence
+            # Fallback to enhanced keyword-based confidence
             return self._calculate_keyword_confidence(text)
         
         try:
@@ -237,29 +249,76 @@ Provide a concise but comprehensive summary:"""
                 [text_embedding]
             )[0][0]
             
-            # Map similarity to confidence score
+            # Base confidence from similarity
             if similarity > 0.7:
-                return 0.9
+                base_confidence = 0.9
             elif similarity > 0.5:
-                return 0.7
+                base_confidence = 0.7
             elif similarity > 0.3:
-                return 0.5
+                base_confidence = 0.5
             else:
-                return 0.4
+                base_confidence = 0.4
+            
+            # Boost confidence for quantitative data
+            quantitative_boost = self._calculate_quantitative_boost(text)
+            return min(base_confidence + quantitative_boost, 0.95)
+            
         except:
             return self._calculate_keyword_confidence(text)
     
-    def _calculate_keyword_confidence(self, text: str) -> float:
-        """Fallback keyword-based confidence calculation."""
-        text_lower = text.lower()
+    def _calculate_quantitative_boost(self, text: str) -> float:
+        """Calculate confidence boost based on quantitative data presence."""
+        boost = 0.0
         
-        # Check for explicit language
-        if any(explicit in text_lower for explicit in ['will', 'decided', 'agreed', 'must', 'need to']):
-            return 0.9
-        elif any(suggestive in text_lower for suggestive in ['should', 'might', 'could', 'consider']):
-            return 0.7
-        else:
-            return 0.5
+        # Check for dates
+        date_patterns = [
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(?:st|nd|rd|th)?',
+            r'\b\d{1,2}/\d{1,2}/\d{2,4}\b',
+            r'\b(?:next|this|last)\s+(?:week|month|quarter)',
+            r'\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)',
+            r'\bQ[1-4]\b'
+        ]
+        if any(re.search(pattern, text, re.IGNORECASE) for pattern in date_patterns):
+            boost += 0.1
+        
+        # Check for numbers and counts
+        number_patterns = [
+            r'\b\d+\s*(?:features?|items?|risks?|decisions?|actions?)\b',
+            r'\b\d+%\b',
+            r'\$\d+(?:K|M|B)?',
+            r'\b\d+\s*(?:days?|weeks?|months?|hours?)',
+            r'\b(?:first|second|third|fourth|fifth|\d+)\s+(?:phase|stage|step)',
+            r'\b\d+\s*(?:core|additional|total)'
+        ]
+        if any(re.search(pattern, text, re.IGNORECASE) for pattern in number_patterns):
+            boost += 0.1
+        
+        # Check for before/after comparisons
+        comparison_patterns = [
+            r'(?:from|change|push|move|shift)\s+.+\s+to\s+',
+            r'(?:instead of|rather than|versus|vs\.?)\s+',
+            r'(?:increase|decrease|reduce|expand)\s+(?:from|by|to)\s*\d+'
+        ]
+        if any(re.search(pattern, text, re.IGNORECASE) for pattern in comparison_patterns):
+            boost += 0.05
+        
+        return boost
+    
+    def _calculate_keyword_confidence(self, text: str) -> float:
+        """Enhanced keyword-based confidence calculation."""
+        text_lower = text.lower()
+        confidence = 0.5  # base confidence
+        
+        # Check for explicit decision language
+        if any(explicit in text_lower for explicit in ['will', 'decided', 'agreed', 'must', 'approved', 'finalized']):
+            confidence = 0.9
+        elif any(suggestive in text_lower for suggestive in ['should', 'might', 'could', 'consider', 'propose']):
+            confidence = 0.7
+        
+        # Apply quantitative boost
+        confidence += self._calculate_quantitative_boost(text)
+        
+        return min(confidence, 0.95)
     
     def extract_structured_data(self, summary: str, segments: List[TranscriptSegment]) -> Dict[str, Any]:
         """Extract structured decisions, actions, and risks using enhanced extractors."""
@@ -278,14 +337,17 @@ Provide a concise but comprehensive summary:"""
         
         # Step 4: Filter low confidence items - but be more lenient
         # Only filter out very low confidence items (< 0.4) to catch more content
+        print(f"[DEBUG] Extractor: Before filtering - {len(decisions)} decisions, {len(action_items)} actions, {len(risks)} risks")
         decisions = [d for d in decisions if d.get("confidence", 0) >= 0.4]
         action_items = [a for a in action_items if a.get("confidence", 0) >= 0.4]
         risks = [r for r in risks if r.get("confidence", 0) >= 0.4]
+        print(f"[DEBUG] Extractor: After filtering - {len(decisions)} decisions, {len(action_items)} actions, {len(risks)} risks")
         
         # Transform Ollama output format to match frontend expectations
         transformed_decisions = self._transform_decisions_for_frontend(decisions)
         transformed_actions = self._transform_actions_for_frontend(action_items)
         transformed_risks = self._transform_risks_for_frontend(risks)
+        print(f"[DEBUG] Extractor: After transformation - {len(transformed_decisions)} decisions, {len(transformed_actions)} actions, {len(transformed_risks)} risks")
         
         return {
             "decisions": transformed_decisions,
@@ -539,13 +601,148 @@ Provide a concise but comprehensive summary:"""
         
         return metrics
     
+    def _extract_metadata(self, segments: List[TranscriptSegment], summary: str, structured: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract meeting metadata for enhanced summary generation."""
+        metadata = {}
+        
+        # Estimate meeting duration based on discussion depth
+        segment_count = len(segments)
+        avg_segment_length = sum(len(seg.text.split()) for seg in segments) / len(segments) if segments else 0
+        
+        # Rough duration estimate
+        if segment_count > 100 or avg_segment_length > 50:
+            metadata["duration"] = "60"
+        elif segment_count > 50:
+            metadata["duration"] = "45"
+        elif segment_count > 20:
+            metadata["duration"] = "30"
+        else:
+            metadata["duration"] = "15"
+        
+        # Detect meeting type from content
+        summary_lower = summary.lower()
+        if "planning" in summary_lower or "plan" in summary_lower:
+            metadata["meeting_type"] = "planning"
+        elif "review" in summary_lower or "status" in summary_lower:
+            metadata["meeting_type"] = "review"
+        elif "retrospective" in summary_lower or "retro" in summary_lower:
+            metadata["meeting_type"] = "retrospective"
+        elif "strategy" in summary_lower or "strategic" in summary_lower:
+            metadata["meeting_type"] = "strategic"
+        else:
+            metadata["meeting_type"] = "discussion"
+        
+        # Extract main topic from decisions or summary
+        if structured["decisions"]:
+            # Look for product/project names in decisions
+            decision_text = " ".join([d.get("text", d.get("decision", "")) for d in structured["decisions"][:3]])
+            if "launch" in decision_text.lower():
+                metadata["main_topic"] = "product launch planning"
+            elif "feature" in decision_text.lower():
+                metadata["main_topic"] = "feature planning"
+            elif "budget" in decision_text.lower():
+                metadata["main_topic"] = "budget planning"
+            else:
+                metadata["main_topic"] = "project planning"
+        else:
+            metadata["main_topic"] = "team discussion"
+        
+        return metadata
+    
+    def _synthesize_executive_summary(self, initial_summary: str, structured: Dict[str, Any], metadata: Dict[str, Any]) -> str:
+        """Synthesize a coherent executive summary from extracted components."""
+        # If Ollama adapter with structured data support
+        if hasattr(self.model_adapter, 'extract_structured_data'):
+            # Prepare structured data summary
+            decisions_summary = []
+            for d in structured["decisions"][:5]:  # Top 5 decisions
+                decision_text = d.get("decision", d.get("text", ""))
+                decisions_summary.append(f"- {decision_text}")
+            
+            actions_summary = []
+            for a in structured["action_items"][:5]:  # Top 5 actions
+                action_text = f"{a.get('owner', 'TBD')}: {a.get('action', '')}"
+                if a.get('due_date'):
+                    action_text += f" (by {a['due_date']})"
+                actions_summary.append(f"- {action_text}")
+            
+            risks_summary = []
+            for r in structured["risks"][:3]:  # Top 3 risks
+                risk_text = r.get("risk", "")
+                if r.get("impact"):
+                    risk_text += f" ({r['impact']} impact)"
+                risks_summary.append(f"- {risk_text}")
+            
+            synthesis_prompt = f"""Create a polished executive summary using this meeting analysis:
+
+Initial Summary: {initial_summary}
+
+Key Decisions Made:
+{chr(10).join(decisions_summary) if decisions_summary else "No major decisions recorded"}
+
+Action Items Assigned:
+{chr(10).join(actions_summary) if actions_summary else "No action items recorded"}
+
+Risks Identified:
+{chr(10).join(risks_summary) if risks_summary else "No risks recorded"}
+
+Meeting Type: {metadata.get('meeting_type', 'planning')} meeting
+Estimated Duration: {metadata.get('duration', '45')} minutes
+Main Topic: {metadata.get('main_topic', 'project planning')}
+
+Create a 2-3 paragraph executive summary that:
+1. Opens with "The [meeting type] was a [duration]-minute session focused on [main topic]"
+2. Summarizes key outcomes including specific dates, numbers, and decisions
+3. Highlights critical next steps and risks
+4. Uses professional, concise language
+
+Executive Summary:"""
+            
+            try:
+                synthesized = self.model_adapter.summarize(
+                    synthesis_prompt,
+                    max_length=300,
+                    min_length=150
+                )
+                return synthesized.strip()
+            except Exception as e:
+                print(f"Synthesis failed: {e}, using initial summary")
+                return initial_summary
+        
+        # Fallback: enhance initial summary with key points
+        key_points = []
+        if structured["decisions"]:
+            key_points.append(f"{len(structured['decisions'])} decisions made")
+        if structured["action_items"]:
+            key_points.append(f"{len(structured['action_items'])} action items assigned")
+        if structured["risks"]:
+            key_points.append(f"{len(structured['risks'])} risks identified")
+        
+        enhanced = f"This {metadata.get('duration', '45')}-minute {metadata.get('meeting_type', 'planning')} session focused on {metadata.get('main_topic', 'project planning')}. "
+        enhanced += initial_summary
+        if key_points:
+            enhanced += f" Key outcomes: {', '.join(key_points)}."
+        
+        return enhanced
+    
     def process(self, segments: List[TranscriptSegment]) -> Dict[str, Any]:
-        """Full extraction pipeline with quality detection."""
-        # Generate summary
-        summary = self.extract_summary(segments)
+        """Full extraction pipeline with quality detection and synthesis."""
+        # Generate initial summary
+        initial_summary = self.extract_summary(segments)
         
         # Extract structured data
-        structured = self.extract_structured_data(summary, segments)
+        structured = self.extract_structured_data(initial_summary, segments)
+        
+        # Extract metadata
+        metadata = self._extract_metadata(segments, initial_summary, structured)
+        
+        # Synthesize executive summary if we have good extraction results
+        if (len(structured["decisions"]) > 0 or len(structured["action_items"]) > 0):
+            summary = self._synthesize_executive_summary(
+                initial_summary, structured, metadata
+            )
+        else:
+            summary = initial_summary
         
         # Calculate quality metrics
         quality_metrics = self._calculate_quality_metrics(summary, structured)
@@ -557,7 +754,7 @@ Provide a concise but comprehensive summary:"""
             quality_metrics["avg_confidence"] < 0.5
         )
         
-        # Get metadata
+        # Get speakers
         speakers = list(set([seg.speaker for seg in segments if seg.speaker]))
         
         return {
@@ -570,6 +767,9 @@ Provide a concise but comprehensive summary:"""
             "metadata": {
                 "speakers": speakers,
                 "segment_count": len(segments),
+                "meeting_type": metadata.get("meeting_type", "meeting"),
+                "duration_estimate": metadata.get("duration", "45"),
+                "main_topic": metadata.get("main_topic", "project discussion"),
                 "extracted_at": datetime.utcnow().isoformat()
             }
         }
@@ -578,7 +778,7 @@ Provide a concise but comprehensive summary:"""
         """Transform Ollama decision format to frontend expected format."""
         transformed = []
         for decision in decisions:
-            # Ollama format: {"decision": "text", "participants": [...], "confidence": 0.9}
+            # Ollama format: {"decision": "text", "participants": [...], "confidence": 0.9, "quantitative_data": {...}}
             # Frontend expects: {"text": "text", "speaker": "name", "timestamp": null, "confidence": 0.9}
             
             # Extract main speaker from participants
@@ -591,19 +791,40 @@ Provide a concise but comprehensive summary:"""
                 elif isinstance(participants, str):
                     speaker = participants
             
-            transformed.append({
+            transformed_decision = {
                 "text": decision.get("decision", decision.get("text", "")),
                 "speaker": speaker,
                 "timestamp": None,  # Not available from Ollama
-                "confidence": decision.get("confidence", 0.5)
-            })
+                "confidence": decision.get("confidence", 0.5),
+                "rationale": decision.get("rationale")
+            }
+            
+            # Include quantitative data if present
+            if "quantitative_data" in decision:
+                transformed_decision["quantitative_data"] = decision["quantitative_data"]
+            
+            transformed.append(transformed_decision)
         return transformed
     
     def _transform_actions_for_frontend(self, actions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Transform action items to frontend format (already matches)."""
-        # Action items already match frontend format:
-        # {"action": "...", "owner": "...", "due_date": "...", "priority": "...", "confidence": ...}
-        return actions
+        """Transform action items to frontend format with additional fields."""
+        # Ensure all actions have required fields and preserve new fields
+        transformed = []
+        for action in actions:
+            transformed_action = {
+                "action": action.get("action", ""),
+                "owner": action.get("owner", "Unknown"),
+                "due_date": action.get("due_date"),
+                "priority": action.get("priority", "medium"),
+                "confidence": action.get("confidence", 0.5)
+            }
+            
+            # Include optional fields if present
+            if "dependencies" in action:
+                transformed_action["dependencies"] = action["dependencies"]
+            
+            transformed.append(transformed_action)
+        return transformed
     
     def _transform_risks_for_frontend(self, risks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Transform Ollama risk format to frontend expected format."""
