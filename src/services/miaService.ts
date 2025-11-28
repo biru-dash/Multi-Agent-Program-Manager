@@ -1,5 +1,5 @@
 /** API service for Meeting Intelligence Agent backend */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = '';
 
 export interface UploadResponse {
   upload_id: string;
@@ -75,12 +75,12 @@ class MIAService {
   async listTranscripts(): Promise<TranscriptFile[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/transcripts`);
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Failed to list transcripts');
       }
-      
+
       const data: TranscriptListResponse = await response.json();
       return data.files;
     } catch (error) {
@@ -139,7 +139,7 @@ class MIAService {
 
       if (!response.ok) {
         let errorMessage = `Upload failed with status ${response.status}`;
-        
+
         try {
           const errorData = await response.json();
           errorMessage = errorData.detail || errorData.message || errorMessage;
@@ -154,7 +154,7 @@ class MIAService {
             // Use default error message
           }
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -235,7 +235,7 @@ class MIAService {
       const poll = async () => {
         try {
           const status = await this.getJobStatus(jobId);
-          
+
           if (onProgress) {
             onProgress(status);
           }

@@ -25,10 +25,10 @@ const Index = () => {
   });
 
   const [agents, setAgents] = useState<AgentState[]>([
-    { 
-      id: 'mia', 
-      name: 'Meeting Intelligence Agent', 
-      status: 'idle', 
+    {
+      id: 'mia',
+      name: 'Meeting Intelligence Agent',
+      status: 'idle',
       progress: 0,
       message: undefined,
       elapsed: undefined,
@@ -61,14 +61,14 @@ const Index = () => {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/health`);
+        const response = await fetch('/health');
         if (response.ok) {
           const data = await response.json();
           setBackendStatus({
             reachable: true,
             status: data.status,
           });
-          addLog('success', `Backend is reachable at ${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}`);
+          addLog('success', 'Backend is reachable via proxy');
         } else {
           throw new Error('Backend not responding');
         }
@@ -94,33 +94,33 @@ const Index = () => {
 
   const handleFilesSelected = async (files: File[]) => {
     if (files.length === 0) return;
-    
+
     const file = files[0];
     addLog('info', `File selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
     setSelectedTranscriptFilename(null); // Clear folder selection when uploading
-    
+
     // Upload the first file to backend
     try {
       addLog('info', 'Starting file upload to backend...');
       console.log('Uploading file:', file.name, 'Size:', file.size, 'bytes');
-      
+
       const uploadResponse = await miaService.uploadFile(file);
       console.log('Upload successful:', uploadResponse);
-      
+
       addLog('success', `File uploaded successfully: ${uploadResponse.filename}`);
       addLog('info', `Upload ID: ${uploadResponse.upload_id}`);
-      
+
       setUploadId(uploadResponse.upload_id);
       setUploadedFiles(files);
       toast.success(`File uploaded: ${uploadResponse.filename}`);
     } catch (error) {
       console.error('Upload error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       addLog('error', `Upload failed: ${errorMessage}`);
-      
+
       toast.error(`Upload failed: ${errorMessage}`);
-      
+
       // Check if it's a connection error
       if (errorMessage.includes('Cannot connect to backend')) {
         addLog('warning', 'Backend server not running. Please start it with: cd backend && uvicorn app.main:app --reload');
@@ -140,7 +140,7 @@ const Index = () => {
     setMiaOutput(null);
 
     // Determine which transcript is being processed
-    const currentTranscriptName = selectedTranscriptFilename || 
+    const currentTranscriptName = selectedTranscriptFilename ||
       (uploadedFiles.length > 0 ? uploadedFiles[0].name : 'Unknown file');
 
     addLog('info', 'Starting transcript processing...');
@@ -163,7 +163,7 @@ const Index = () => {
         config.modelStrategy || 'local',
         config.preprocessing || 'advanced'
       );
-      
+
       setCurrentJobId(processResponse.job_id);
       addLog('success', `Processing job started. Job ID: ${processResponse.job_id}`);
       addLog('info', 'Polling for status updates...');
@@ -176,28 +176,28 @@ const Index = () => {
           if (status.progress > 0) {
             addLog('info', `Processing progress: ${status.progress}%`);
           }
-          
+
           if (status.status === 'processing' && status.message) {
             addLog('info', status.message);
           }
-          
+
           setAgents((prev) =>
             prev.map((a) =>
               a.id === 'mia'
-                ? { 
-                    ...a, 
-                    progress: status.progress, 
-                    status: status.status === 'completed' 
-                      ? 'success' 
-                      : status.status === 'failed' 
-                        ? 'error' 
-                        : 'processing',
-                    error: status.error,
-                    message: status.message,
-                    elapsed: status.elapsed,
-                    eta: status.eta,
-                    estimatedTotal: status.estimated_total
-                  }
+                ? {
+                  ...a,
+                  progress: status.progress,
+                  status: status.status === 'completed'
+                    ? 'success'
+                    : status.status === 'failed'
+                      ? 'error'
+                      : 'processing',
+                  error: status.error,
+                  message: status.message,
+                  elapsed: status.elapsed,
+                  eta: status.eta,
+                  estimatedTotal: status.estimated_total
+                }
                 : a
             )
           );
@@ -206,11 +206,11 @@ const Index = () => {
 
       // Check final status before getting results
       const finalStatus = await miaService.getJobStatus(processResponse.job_id);
-      
+
       if (finalStatus.status === 'failed') {
         throw new Error(finalStatus.error || finalStatus.message || 'Processing failed');
       }
-      
+
       if (finalStatus.status !== 'completed') {
         throw new Error(`Unexpected status: ${finalStatus.status}`);
       }
@@ -222,23 +222,23 @@ const Index = () => {
       const results = await miaService.getResults(processResponse.job_id);
       setMiaOutput(results);
       setProcessedTranscriptFilename(currentTranscriptName);
-      
+
       addLog('success', 'Results retrieved successfully');
       addLog('info', `Found ${results.decisions.length} decisions, ${results.action_items.length} action items, ${results.risks.length} risks`);
-      
+
       toast.success('MIA processing complete!');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Processing failed';
       addLog('error', `Processing failed: ${errorMessage}`);
-      
+
       setAgents((prev) =>
         prev.map((a) =>
-          a.id === 'mia' 
-            ? { 
-                ...a, 
-                status: 'error', 
-                error: errorMessage
-              } 
+          a.id === 'mia'
+            ? {
+              ...a,
+              status: 'error',
+              error: errorMessage
+            }
             : a
         )
       );
@@ -250,10 +250,10 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setAgents([{ 
-      id: 'mia', 
-      name: 'Meeting Intelligence Agent', 
-      status: 'idle', 
+    setAgents([{
+      id: 'mia',
+      name: 'Meeting Intelligence Agent',
+      status: 'idle',
       progress: 0,
       message: undefined,
       elapsed: undefined,
@@ -293,9 +293,6 @@ const Index = () => {
               <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 Meeting Intelligence Agent (MIA)
               </h1>
-              <p className="text-sm text-muted-foreground">
-                Sprint 1: Extract insights from meeting transcripts
-              </p>
             </div>
             <div className="flex items-center gap-3">
               <ExportButtons

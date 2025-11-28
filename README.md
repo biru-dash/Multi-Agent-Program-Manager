@@ -2,6 +2,38 @@
 
 A sophisticated multi-agent system for extracting structured insights from meeting transcripts using LangChain, LangSmith, and configurable LLM providers (Ollama, HuggingFace).
 
+## Quick Start
+
+### Clone the Repository
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Multi-Agent-Program-Manager
+
+# Or if you already have it cloned, navigate to the directory
+cd Multi-Agent-Program-Manager
+```
+
+### Quick Setup (Localhost)
+
+For a quick start on localhost, use the provided startup scripts:
+
+```bash
+# Terminal 1: Start backend server
+./start-backend.sh
+
+# Terminal 2: Start frontend server  
+./start-frontend.sh
+```
+
+The application will be available at:
+- **Frontend**: http://localhost:8080
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+For detailed setup instructions, see the [Setup Instructions](#setup-instructions) section below.
+
 ## Features
 
 ### Core Extraction Capabilities
@@ -45,15 +77,29 @@ A sophisticated multi-agent system for extracting structured insights from meeti
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- Node.js 18+ and npm
+Before starting, ensure you have the following installed:
+
+- **Python 3.10 or higher** - Check with `python3 --version`
+- **Node.js 18+ and npm** - Check with `node --version` and `npm --version`
+- **Git** - For cloning the repository
 - **Ollama** (for Llama3 models) - Install from [ollama.ai](https://ollama.ai)
-- Hugging Face account with API token (for remote/hybrid strategies)
-- **Optional**: LangSmith API key (for evaluation observability)
+- **Hugging Face account** with API token (for remote/hybrid strategies) - Get token from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+- **Optional**: LangSmith API key (for evaluation observability) - Get from [smith.langchain.com](https://smith.langchain.com)
 
-### Backend Setup
+### Step 1: Clone the Repository
 
-1. **Clone and navigate to backend directory:**
+```bash
+# Clone the repository (replace with your repository URL)
+git clone <repository-url>
+cd Multi-Agent-Program-Manager
+
+# Or if you already have it cloned
+cd Multi-Agent-Program-Manager
+```
+
+### Step 2: Backend Setup
+
+1. **Navigate to backend directory:**
    ```bash
    cd backend
    ```
@@ -118,9 +164,16 @@ A sophisticated multi-agent system for extracting structured insights from meeti
    The API will be available at `http://localhost:8000`
    API documentation: `http://localhost:8000/docs`
 
-### Frontend Setup
+### Step 3: Frontend Setup
 
-1. **Navigate to project root (where package.json is located)**
+1. **Navigate to project root (where package.json is located):**
+   ```bash
+   # From backend directory
+   cd ..
+   
+   # Or from anywhere, navigate to project root
+   cd Multi-Agent-Program-Manager
+   ```
 
 2. **Install dependencies:**
    ```bash
@@ -128,6 +181,12 @@ A sophisticated multi-agent system for extracting structured insights from meeti
    ```
 
 3. **Create `.env` file in project root:**
+   ```bash
+   # Create .env file
+   touch .env
+   ```
+   
+   Add the following content:
    ```env
    VITE_API_BASE_URL=http://localhost:8000
    ```
@@ -136,8 +195,40 @@ A sophisticated multi-agent system for extracting structured insights from meeti
    ```bash
    npm run dev
    ```
+   
+   **Note**: The frontend is configured to run on port 8080 (not the default 5173). Check the terminal output for the exact URL.
 
-   The frontend will be available at `http://localhost:5173`
+### Step 4: Start Both Servers
+
+You have two options for starting the servers:
+
+**Option A: Using Startup Scripts (Recommended)**
+```bash
+# Terminal 1: Start backend
+./start-backend.sh
+
+# Terminal 2: Start frontend
+./start-frontend.sh
+```
+
+**Option B: Manual Start**
+```bash
+# Terminal 1: Start backend
+cd backend
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start frontend
+npm run dev
+```
+
+### Step 5: Verify Installation
+
+1. **Backend API**: Visit http://localhost:8000/docs - You should see the FastAPI Swagger documentation
+2. **Frontend UI**: Visit http://localhost:8080 - You should see the MIA application interface
+3. **Check Ollama**: Run `ollama list` to verify your models are available
+
+If everything is working, you're ready to use the application!
 
 ## Documentation
 
@@ -191,17 +282,135 @@ graph TB
     style F fill:#e8f5e8
 ```
 
-## Usage
+## Usage Guide
 
-1. **Upload a transcript file** (TXT, JSON, or SRT format)
-2. **Configure settings:**
-   - Model Strategy: Choose local, remote, or hybrid
-   - Preprocessing: Choose basic or advanced
-3. **Click "Process"** to start analysis
-4. **View results** in the output panel with evaluation tabs
-5. **Review quality scores** in the evaluation dashboard
-6. **Provide human feedback** through the review interface
-7. **Export results** as JSON or Markdown
+### Basic Workflow
+
+1. **Access the Application**
+   - Open your browser and navigate to http://localhost:8080
+   - You should see the MIA (Meeting Intelligence Agent) interface
+
+2. **Upload a Transcript File**
+   - Click on the file upload area or drag and drop a transcript file
+   - Supported formats: **TXT**, **JSON**, or **SRT**
+   - Sample transcripts are available in the `meeting_transcripts/` directory
+
+3. **Configure Processing Settings**
+   - **Model Strategy**: 
+     - `local` - Uses only local models (slower, no API costs)
+     - `remote` - Uses HuggingFace API (requires API token)
+     - `hybrid` - Mix of local and remote (recommended)
+   - **Preprocessing Level**:
+     - `basic` - Standard text cleaning
+     - `advanced` - Includes semantic chunking and topic segmentation
+
+4. **Process the Transcript**
+   - Click the **"Process"** button to start analysis
+   - Processing time varies by transcript length (typically 1-5 minutes)
+   - You'll see a progress indicator during processing
+
+5. **View Results**
+   - Once processing completes, results appear in the output panel
+   - Navigate between tabs to see:
+     - **Summary**: Executive summary of the meeting
+     - **Decisions**: Key decisions made during the meeting
+     - **Action Items**: Tasks with owners and deadlines
+     - **Risks**: Identified risks and concerns
+
+6. **Review Evaluation Scores** (Optional)
+   - Click on the **"Evaluation"** tab to see quality scores
+   - View automated LLM evaluation scores for each component
+   - Check coverage, factuality, clarity, and completeness metrics
+
+7. **Provide Human Feedback** (Optional)
+   - Use the **"Human Review"** interface to score results
+   - Provide feedback on extraction quality
+   - Mark items for retraining if needed
+
+8. **Export Results**
+   - Click **"Export"** button to download results
+   - Choose format: **JSON** (structured data) or **Markdown** (readable report)
+
+### Advanced Features
+
+- **Evaluation Dashboard**: View detailed quality metrics and trends
+- **Prior Runs**: Access and review previously processed transcripts
+- **Provenance View**: See which transcript segments contributed to each extraction
+- **LangSmith Integration**: Monitor evaluation runs in LangSmith dashboard (if configured)
+
+### Sample Transcripts
+
+Try the application with included sample transcripts:
+- `meeting_transcripts/Q4_Product_Launch_Planning_Meeting_20250315.txt`
+- `meeting_transcripts/Aftermarket Revenue Visibility_ Discovery read-out.txt`
+
+## How It Works
+
+This section explains how the MIA system currently operates, from transcript upload to final results.
+
+### System Architecture Overview
+
+The MIA system consists of two main components:
+
+1. **Backend (FastAPI)**: Python-based API server that handles transcript processing, extraction, and evaluation
+2. **Frontend (React/Vite)**: Web-based user interface for uploading transcripts and viewing results
+
+### Request Flow
+
+```
+User Upload → Frontend (React) → Backend API (FastAPI) → Processing Pipeline → Results → Frontend Display
+```
+
+### Processing Pipeline
+
+When you upload a transcript, the system processes it through these stages:
+
+#### 1. File Upload & Validation
+   - File is received via POST `/api/upload`
+   - Validates file format (TXT, JSON, or SRT)
+   - Saves file to `backend/uploads/` directory
+   - Returns an `upload_id` for tracking
+
+#### 2. Transcript Parsing
+   - Detects file format automatically
+   - Parses transcript to extract speakers, timestamps, and text content
+   - Returns structured transcript segments
+
+#### 3. Text Preprocessing
+   - Removes filler words and normalizes speaker names
+   - Merges consecutive short turns from same speaker
+   - Optional: Semantic chunking for topic segmentation
+
+#### 4. Extraction Pipeline
+   
+   The system extracts four main components:
+
+   - **Summary Generation**: Hierarchical summarization using chunked approach
+   - **Decision Extraction**: Identifies concrete decisions with rationale
+   - **Action Item Extraction**: Extracts tasks with owners and deadlines
+   - **Risk Identification**: Detects and categorizes potential risks
+
+#### 5. Results Storage & Display
+   - Results saved to `backend/outputs/{job_id}/`
+   - Frontend displays summary, decisions, actions, and risks
+   - Evaluation scores shown in dashboard (if enabled)
+
+### Model Configuration
+
+- **Local Models**: Sentence Transformers, BERT-based NER
+- **Ollama Models**: Llama3.2/Llama3 for summarization and extraction
+- **HuggingFace API**: Remote models via API
+- **Hybrid**: Combination of local and remote models (recommended)
+
+### Key Implementation Details
+
+1. **Async Processing**: Long-running tasks handled asynchronously with job tracking
+2. **Error Handling**: Comprehensive error handling with fallback models
+3. **Caching**: Models cached locally to avoid repeated downloads
+4. **Modular Design**: Each component independently testable
+5. **API-First**: Backend provides RESTful API usable independently
+
+For detailed technical architecture, see the [Extraction and Evaluation Architecture](#extraction-and-evaluation-architecture) section below.
 
 ## Extraction and Evaluation Architecture
 

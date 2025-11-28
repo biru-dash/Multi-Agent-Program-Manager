@@ -30,10 +30,10 @@ interface EvaluationSchema {
   };
 }
 
-export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({ 
-  jobId, 
+export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
+  jobId,
   extractionResults,
-  onReviewSubmitted 
+  onReviewSubmitted
 }) => {
   const [schema, setSchema] = useState<EvaluationSchema | null>(null);
   const [reviews, setReviews] = useState<{ [key: string]: ComponentReview }>({});
@@ -50,11 +50,11 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
 
   const fetchSchema = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/evaluation/schema');
+      const response = await fetch('/api/evaluation/schema');
       if (!response.ok) throw new Error('Failed to fetch schema');
       const data = await response.json();
       setSchema(data);
-      
+
       // Initialize review state
       const initialReviews: { [key: string]: ComponentReview } = {};
       Object.keys(data.components).forEach(component => {
@@ -105,7 +105,7 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
     setSuccess(null);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/evaluation/${jobId}/human-review`, {
+      const response = await fetch(`/api/evaluation/${jobId}/human-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -119,10 +119,10 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
       });
 
       if (!response.ok) throw new Error('Failed to submit review');
-      
+
       setSubmittedComponents(prev => new Set([...prev, component]));
       setSuccess(`Review for ${component} submitted successfully!`);
-      
+
       if (onReviewSubmitted) {
         onReviewSubmitted();
       }
@@ -166,7 +166,7 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
+
         {success && (
           <Alert className="mb-4 border-green-200 bg-green-50">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -230,7 +230,7 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <Slider
                       value={[reviews[component]?.scores[criterion] || 5]}
                       onValueChange={([value]) => updateScore(component, criterion, value)}
@@ -239,7 +239,7 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
                       step={1}
                       className="w-full"
                     />
-                    
+
                     <Textarea
                       placeholder="Explain your rating (optional)..."
                       value={reviews[component]?.explanations[criterion] || ''}
@@ -266,7 +266,7 @@ export const HumanReviewForm: React.FC<HumanReviewFormProps> = ({
                 <Checkbox
                   id={`retrain-${component}`}
                   checked={markForRetraining[component] || false}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setMarkForRetraining(prev => ({ ...prev, [component]: checked as boolean }))
                   }
                 />

@@ -56,16 +56,16 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
 
   const fetchEvaluation = async () => {
     if (!jobId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`http://localhost:8000/api/evaluation/${jobId}/status`);
+      const response = await fetch(`/api/evaluation/${jobId}/status`);
       if (!response.ok) {
         throw new Error('Evaluation not found');
       }
-      
+
       const data = await response.json();
       setEvaluationData(data);
     } catch (err) {
@@ -77,12 +77,12 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
 
   const triggerEvaluation = async () => {
     if (!jobId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`http://localhost:8000/api/evaluation/${jobId}/trigger`, {
+      const response = await fetch(`/api/evaluation/${jobId}/trigger`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -90,11 +90,11 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
           include_metrics: true
         })
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to trigger evaluation');
       }
-      
+
       // Poll for results
       setTimeout(() => fetchEvaluation(), 2000);
     } catch (err) {
@@ -141,10 +141,10 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
             <AlertDescription>
               {error}
               {jobId && (
-                <Button 
-                  onClick={triggerEvaluation} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={triggerEvaluation}
+                  variant="outline"
+                  size="sm"
                   className="ml-4"
                 >
                   Trigger Evaluation
@@ -175,7 +175,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
   }
 
   const { aggregated_evaluation, improvement_report } = evaluationData;
-  
+
   // Prepare data for charts
   const componentScores = Object.entries(aggregated_evaluation.components).map(([name, data]) => ({
     component: name,
@@ -246,7 +246,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
                 </TabsTrigger>
               ))}
             </TabsList>
-            
+
             {Object.entries(aggregated_evaluation.components).map(([comp, data]) => (
               <TabsContent key={comp} value={comp} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -264,7 +264,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({ jobId 
                       </div>
                     ))}
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium mb-2">Score Breakdown</h4>
                     <ResponsiveContainer width="100%" height={200}>
