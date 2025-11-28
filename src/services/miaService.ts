@@ -70,6 +70,49 @@ class MIAService {
   }
 
   /**
+   * Safely parse JSON response with error handling
+   */
+  private async safeJsonParse<T>(response: Response): Promise<T> {
+    const text = await response.text();
+    
+    if (!text || text.trim() === '') {
+      throw new Error(`Empty response from server (${response.status} ${response.statusText})`);
+    }
+
+    try {
+      return JSON.parse(text) as T;
+    } catch (error) {
+      // If parsing fails, try to extract error message from HTML/text
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Invalid JSON response: ${errorMessage}. Response preview: ${text.substring(0, 200)}`);
+    }
+  }
+
+  /**
+   * Handle error response safely
+   */
+  private async handleErrorResponse(response: Response): Promise<never> {
+    let errorMessage = `Request failed (${response.status} ${response.statusText})`;
+    
+    try {
+      const text = await response.text();
+      if (text) {
+        try {
+          const error = JSON.parse(text);
+          errorMessage = error.detail || error.message || error.error || errorMessage;
+        } catch {
+          // Not JSON, use text as error message (limit length)
+          errorMessage = text.length > 500 ? text.substring(0, 500) + '...' : text;
+        }
+      }
+    } catch {
+      // Use default error message if we can't read response
+    }
+    
+    throw new Error(errorMessage);
+  }
+
+  /**
    * List available transcript files from meeting_transcripts folder
    */
   async listTranscripts(): Promise<TranscriptFile[]> {
@@ -77,11 +120,10 @@ class MIAService {
       const response = await fetch(`${this.baseUrl}/api/transcripts`);
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to list transcripts');
+        await this.handleErrorResponse(response);
       }
 
-      const data: TranscriptListResponse = await response.json();
+      const data: TranscriptListResponse = await this.safeJsonParse<TranscriptListResponse>(response);
       return data.files;
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -107,11 +149,10 @@ class MIAService {
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to select transcript');
+        await this.handleErrorResponse(response);
       }
 
-      return response.json();
+      return await this.safeJsonParse<UploadResponse>(response);
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error(
@@ -138,27 +179,10 @@ class MIAService {
       });
 
       if (!response.ok) {
-        let errorMessage = `Upload failed with status ${response.status}`;
-
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.detail || errorData.message || errorMessage;
-        } catch {
-          // If response is not JSON, try text
-          try {
-            const errorText = await response.text();
-            if (errorText) {
-              errorMessage = errorText;
-            }
-          } catch {
-            // Use default error message
-          }
-        }
-
-        throw new Error(errorMessage);
+        await this.handleErrorResponse(response);
       }
 
-      return await response.json();
+      return await this.safeJsonParse<UploadResponse>(response);
     } catch (error) {
       // Handle network errors, CORS errors, etc.
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -188,11 +212,10 @@ class MIAService {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Processing failed');
+      await this.handleErrorResponse(response);
     }
 
-    return response.json();
+    return await this.safeJsonParse<{ job_id: string; status: string; message: string }>(response);
   }
 
   /**
@@ -202,11 +225,10 @@ class MIAService {
     const response = await fetch(`${this.baseUrl}/api/status/${jobId}`);
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to get job status');
+      await this.handleErrorResponse(response);
     }
 
-    return response.json();
+    return await this.safeJsonParse<JobStatus>(response);
   }
 
   /**
@@ -216,11 +238,10 @@ class MIAService {
     const response = await fetch(`${this.baseUrl}/api/results/${jobId}`);
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to get results');
+      await this.handleErrorResponse(response);
     }
 
-    return response.json();
+    return await this.safeJsonParse<MIAResults>(response);
   }
 
   /**
@@ -261,8 +282,7 @@ class MIAService {
     const response = await fetch(`${this.baseUrl}/api/export/${jobId}?format=${format}`);
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Export failed');
+      await this.handleErrorResponse(response);
     }
 
     return response.blob();
